@@ -1,0 +1,90 @@
+[
+  {
+    "case_id": "c1",
+    "inputs": {
+      "customer": "Acme Labs",
+      "description": "Research",
+      "quantity": 1,
+      "unit_price_cents": 10000,
+      "due_date": "2026-09-30"
+    },
+    "seed_version": "crm-seed-v1"
+  },
+  {
+    "case_id": "c2",
+    "inputs": {
+      "customer": "Birch Studio",
+      "description": "Design",
+      "quantity": 3,
+      "unit_price_cents": 1999,
+      "due_date": "2026-12-31"
+    },
+    "seed_version": "crm-seed-v1"
+  },
+  {
+    "case_id": "c3",
+    "inputs": {
+      "customer": "Cedar Health",
+      "description": "Review",
+      "quantity": 2,
+      "unit_price_cents": 25001,
+      "due_date": "2027-01-01"
+    },
+    "seed_version": "crm-seed-v1"
+  },
+  {
+    "case_id": "c4",
+    "inputs": {
+      "customer": "Delta Works",
+      "description": "Support",
+      "quantity": 7,
+      "unit_price_cents": 101,
+      "due_date": "2028-02-29"
+    },
+    "seed_version": "crm-seed-v1"
+  },
+  {
+    "case_id": "c5",
+    "inputs": {
+      "customer": "Élan Design",
+      "description": "Quote \"yes\" & café",
+      "quantity": 2,
+      "unit_price_cents": 3333,
+      "due_date": "2027-02-28"
+    },
+    "seed_version": "crm-seed-v1"
+  },
+  {
+    "case_id": "c6",
+    "inputs": {
+      "customer": "Acme Labs",
+      "description": "Repeated 42",
+      "quantity": 42,
+      "unit_price_cents": 42,
+      "due_date": "2026-10-01"
+    },
+    "seed_version": "crm-seed-v1"
+  },
+  {
+    "case_id": "c7",
+    "inputs": {
+      "customer": "Birch Studio",
+      "description": "Zero-priced sample",
+      "quantity": 1,
+      "unit_price_cents": 0,
+      "due_date": "2026-09-08"
+    },
+    "seed_version": "crm-seed-v1"
+  },
+  {
+    "case_id": "c8",
+    "inputs": {
+      "customer": "Élan Design",
+      "description": "Boundary",
+      "quantity": 5,
+      "unit_price_cents": 99999,
+      "due_date": "2027-12-31"
+    },
+    "seed_version": "crm-seed-v1"
+  }
+]

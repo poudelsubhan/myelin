@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "workflow": "crm.create_invoice",
+  "app": "crm",
+  "version": 1,
+  "parent_hash": null,
+  "input_schema": {
+    "type": "object"
+  },
+  "policy_revision": "crm-policy-v1",
+  "supported_revisions": [
+    "crm-v1"
+  ],
+  "steps": [
+    {
+      "id": "login-form",
+      "intent": "Read the login form",
+      "source_action_ids": [
+        "a1"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "response",
+          "path": "status",
+          "op": "eq",
+          "expected": {
+            "kind": "literal",
+            "value": 200
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "http",
+      "method": "GET",
+      "url": {
+        "kind": "literal",
+        "value": "http://localhost:8101/login"
+      },
+      "path_params": {},
+      "query": {},
+      "headers": {},
+      "body_kind": "none",
+      "body": {},
+      "extract": []
+    }
+  ],
+  "final_post": [
+    {
+      "kind": "compare",
+      "source": "response",
+      "path": "status",
+      "op": "eq",
+      "expected": {
+        "kind": "literal",
+        "value": 200
+      }
+    }
+  ],
+  "compiled_from": [
+    "fixture-trace"
+  ],
+  "notes": "Contract fixture, not compiled evidence"
+}

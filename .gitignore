@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+runs/
+apps/*/data/
+*.sqlite*
+.DS_Store
+# Private planning provenance; publish reviewed implementation specification only.
+myelin-session-transcript.md
+myelin-plan-review.md

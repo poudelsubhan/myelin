@@ -1,0 +1,14 @@
+{
+  "candidate_hash": "9c35c64022df9dcc24d69f8fdc0c8520a8fa63b4d3ec5313f95b20bde8eb25d7",
+  "workflow": "crm.create_invoice",
+  "environment": {
+    "app": "crm",
+    "revision": "crm-v1",
+    "mutations": [],
+    "seed_version": "crm-seed-v1"
+  },
+  "policy_revision": "crm-policy-v1",
+  "suite_hash": "fixture-suite",
+  "reference_mode": "none",
+  "reference_case_ids": []
+}

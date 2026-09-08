@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<h1>Customers</h1><ul>{% for c in customers %}<li><a href="/customers/{{c.id}}/invoices/new">{{c.name}}</a></li>{% endfor %}</ul>{% endblock %}

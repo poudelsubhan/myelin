@@ -1,0 +1,17 @@
+workflow: crm.create_invoice
+app: crm
+policy_revision: crm-policy-v1
+seed_version: crm-seed-v1
+goal: Create an invoice for the requested customer with the supplied line-item values and due date, then mark it paid.
+inputs:
+  customer: string
+  description: string
+  quantity: integer
+  unit_price_cents: integer
+  due_date: date
+held_out:
+  customer: Delta Works
+  description: 'Stage "ninth" invoice'
+  quantity: 4
+  unit_price_cents: 12345
+  due_date: '2026-11-30'

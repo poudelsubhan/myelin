@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "run_id": "fixture-trace",
+  "workflow": "crm.create_invoice",
+  "inputs": {},
+  "environment": {
+    "app": "crm",
+    "revision": "crm-v1",
+    "mutations": [],
+    "seed_version": "crm-seed-v1"
+  },
+  "policy_revision": "crm-policy-v1",
+  "initial_observation": "obs1",
+  "actions": [],
+  "usage_response_ids": [],
+  "steer_marks": [],
+  "outcome": "running",
+  "final_observation": null
+}

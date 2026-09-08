@@ -1,0 +1,9 @@
+revision: work-v1
+metric:
+  http_request: 1
+  ui_action: 10
+ceilings:
+  crm.create_invoice: 250
+  expense.submit_expense: 250
+optimization_slack: 0
+require_zero_model_calls: true
