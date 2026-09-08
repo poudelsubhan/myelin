@@ -1,0 +1,656 @@
+{
+  "schema_version": 1,
+  "workflow": "crm.create_invoice",
+  "app": "crm",
+  "version": 1,
+  "parent_hash": null,
+  "input_schema": {
+    "type": "object"
+  },
+  "policy_revision": "crm-policy-v1",
+  "supported_revisions": [
+    "crm-v1"
+  ],
+  "steps": [
+    {
+      "id": "open-login",
+      "intent": "open login",
+      "source_action_ids": [
+        "handwritten:open-login"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "navigate",
+      "target": null,
+      "arguments": {
+        "url": {
+          "kind": "literal",
+          "value": "http://localhost:8101/login"
+        }
+      }
+    },
+    {
+      "id": "fill-email",
+      "intent": "fill email",
+      "source_action_ids": [
+        "handwritten:fill-email"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Email",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "secret",
+          "key": "email"
+        }
+      }
+    },
+    {
+      "id": "fill-password",
+      "intent": "fill password",
+      "source_action_ids": [
+        "handwritten:fill-password"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Password",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "secret",
+          "key": "password"
+        }
+      }
+    },
+    {
+      "id": "fill-tenant",
+      "intent": "fill tenant",
+      "source_action_ids": [
+        "handwritten:fill-tenant"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Tenant",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "secret",
+          "key": "tenant"
+        }
+      }
+    },
+    {
+      "id": "sign-in",
+      "intent": "sign in",
+      "source_action_ids": [
+        "handwritten:sign-in"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "write",
+      "operation_key": "sign-in",
+      "depends_on": [],
+      "kind": "ui",
+      "action": "click",
+      "target": {
+        "strategy": "role",
+        "value": "Sign in",
+        "role": "button",
+        "exact": true
+      },
+      "arguments": {}
+    },
+    {
+      "id": "choose-customer",
+      "intent": "choose customer",
+      "source_action_ids": [
+        "handwritten:choose-customer"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "click",
+      "target": {
+        "strategy": "role",
+        "value": "Acme Labs",
+        "role": "link",
+        "exact": true
+      },
+      "arguments": {
+        "target_value": {
+          "kind": "input",
+          "key": "customer"
+        }
+      }
+    },
+    {
+      "id": "fill-description",
+      "intent": "fill description",
+      "source_action_ids": [
+        "handwritten:fill-description"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Description",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "input",
+          "key": "description"
+        }
+      }
+    },
+    {
+      "id": "fill-quantity",
+      "intent": "fill quantity",
+      "source_action_ids": [
+        "handwritten:fill-quantity"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Quantity",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "input",
+          "key": "quantity"
+        }
+      }
+    },
+    {
+      "id": "fill-unit_price_cents",
+      "intent": "fill unit_price_cents",
+      "source_action_ids": [
+        "handwritten:fill-unit_price_cents"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Unit price (cents)",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "input",
+          "key": "unit_price_cents"
+        }
+      }
+    },
+    {
+      "id": "fill-due_date",
+      "intent": "fill due_date",
+      "source_action_ids": [
+        "handwritten:fill-due_date"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Due date",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "input",
+          "key": "due_date"
+        }
+      }
+    },
+    {
+      "id": "fill-total",
+      "intent": "fill total",
+      "source_action_ids": [
+        "handwritten:fill-total"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "ui",
+      "action": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Invoice total (cents)",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "multiply_int",
+          "left": {
+            "kind": "input",
+            "key": "quantity"
+          },
+          "right": {
+            "kind": "input",
+            "key": "unit_price_cents"
+          }
+        }
+      }
+    },
+    {
+      "id": "create-invoice",
+      "intent": "create invoice",
+      "source_action_ids": [
+        "handwritten:create-invoice"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "write",
+      "operation_key": "create-invoice",
+      "depends_on": [],
+      "kind": "ui",
+      "action": "click",
+      "target": {
+        "strategy": "role",
+        "value": "Create invoice",
+        "role": "button",
+        "exact": true
+      },
+      "arguments": {}
+    },
+    {
+      "id": "mark-paid",
+      "intent": "mark paid",
+      "source_action_ids": [
+        "handwritten:mark-paid"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "url",
+          "path": "",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "business",
+          "path": "$.invoices[0].status",
+          "op": "eq",
+          "expected": {
+            "kind": "literal",
+            "value": "paid"
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "write",
+      "operation_key": "mark-paid",
+      "depends_on": [],
+      "kind": "ui",
+      "action": "click",
+      "target": {
+        "strategy": "role",
+        "value": "Mark paid",
+        "role": "button",
+        "exact": true
+      },
+      "arguments": {}
+    }
+  ],
+  "final_post": [
+    {
+      "kind": "compare",
+      "source": "business",
+      "path": "$.invoices[0].status",
+      "op": "eq",
+      "expected": {
+        "kind": "literal",
+        "value": "paid"
+      }
+    }
+  ],
+  "compiled_from": [
+    "handwritten-phase1-fixture"
+  ],
+  "notes": "Handwritten UI contract fixture. Not model compilation evidence."
+}

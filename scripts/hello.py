@@ -1,4 +1,5 @@
 """Phase 0 real browser and Responses probe; unsupported access never passes."""
+
 import argparse
 import asyncio
 import base64
@@ -17,8 +18,14 @@ async def probe(browser_only=False):
     run_id = f"smoke-{uuid4()}"
     folder = settings.runs_dir / run_id
     folder.mkdir(parents=True)
-    evidence = {"run_id": run_id, "timestamp": time.time(), "model": settings.model,
-                "browser": "pending", "responses": "not_requested", "passed": False}
+    evidence = {
+        "run_id": run_id,
+        "timestamp": time.time(),
+        "model": settings.model,
+        "browser": "pending",
+        "responses": "not_requested",
+        "passed": False,
+    }
     try:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=settings.headless)
@@ -36,22 +43,43 @@ async def probe(browser_only=False):
         if not settings.live or not settings.api_key:
             evidence["responses"] = "blocked_missing_key_or_live_flag"
             return evidence
-        async with AsyncOpenAI(api_key=settings.api_key, base_url=settings.base_url,
-                               timeout=settings.timeout_s, max_retries=0) as client:
+        async with AsyncOpenAI(
+            api_key=settings.api_key,
+            base_url=settings.base_url,
+            timeout=settings.timeout_s,
+            max_retries=0,
+        ) as client:
             response = await client.responses.create(
-                model=settings.model, reasoning={"effort": "low"}, max_output_tokens=256,
-                input=[{"role": "user", "content": [
-                    {"type": "input_text",
-                     "text": "Read the screenshot. Reply with the page heading."},
-                    {"type": "input_image", "image_url": "data:image/png;base64,"
-                     + base64.b64encode(screenshot).decode()},
-                ]}],
+                model=settings.model,
+                reasoning={"effort": "low"},
+                max_output_tokens=256,
+                input=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "input_text",
+                                "text": "Read the screenshot. Reply with the page heading.",
+                            },
+                            {
+                                "type": "input_image",
+                                "image_url": "data:image/png;base64,"
+                                + base64.b64encode(screenshot).decode(),
+                            },
+                        ],
+                    }
+                ],
             )
-        evidence.update(response_id=response.id, response_status=response.status,
-                        usage=response.usage.model_dump() if response.usage else None)
-        evidence["responses"] = "passed" if (
-            response.status == "completed" and "sign in" in response.output_text.lower()
-        ) else "failed"
+        evidence.update(
+            response_id=response.id,
+            response_status=response.status,
+            usage=response.usage.model_dump() if response.usage else None,
+        )
+        evidence["responses"] = (
+            "passed"
+            if (response.status == "completed" and "sign in" in response.output_text.lower())
+            else "failed"
+        )
         evidence["passed"] = evidence["responses"] == "passed"
     except Exception as exc:
         # Exceptions can contain credential-bearing request data; retain only safe classification.
@@ -68,5 +96,6 @@ if __name__ == "__main__":
     parser.add_argument("--browser-only", action="store_true")
     args = parser.parse_args()
     result = asyncio.run(probe(args.browser_only))
-    raise SystemExit(0 if result["passed"] or (
-        args.browser_only and result["browser"] == "passed") else 1)
+    raise SystemExit(
+        0 if result["passed"] or (args.browser_only and result["browser"] == "passed") else 1
+    )

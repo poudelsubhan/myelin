@@ -1,4 +1,5 @@
 """Owned CRM with tenant isolation and transactional, reconcilable writes."""
+
 import hashlib
 import hmac
 import json
@@ -18,7 +19,9 @@ from myelin.config import ROOT, Settings
 from myelin.schema import Contract, EnvironmentSpec
 
 MUTATIONS = {
-    "reorder_fields:invoice", "move_button:mark_paid", "rename_field:invoice_total",
+    "reorder_fields:invoice",
+    "move_button:mark_paid",
+    "rename_field:invoice_total",
     "add_modal:consent",
 }
 CUSTOMERS = ["Acme Labs", "Birch Studio", "Cedar Health", "Delta Works", "Élan Design"]
@@ -87,8 +90,9 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
             raise HTTPException(403, "internal demo token required")
 
     def session(request, conn):
-        row = conn.execute("SELECT * FROM sessions WHERE token=?",
-                           (request.cookies.get("myelin_session", ""),)).fetchone()
+        row = conn.execute(
+            "SELECT * FROM sessions WHERE token=?", (request.cookies.get("myelin_session", ""),)
+        ).fetchone()
         if row is None:
             raise HTTPException(401, "sign in required")
         return dict(row)
@@ -112,8 +116,9 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
 
     def scoped(conn, table, entity_id, tenant):
         # Table is selected by application code, never by user input.
-        row = conn.execute(f"SELECT * FROM {table} WHERE id=? AND tenant=?",
-                           (entity_id, tenant)).fetchone()
+        row = conn.execute(
+            f"SELECT * FROM {table} WHERE id=? AND tenant=?", (entity_id, tenant)
+        ).fetchone()
         if row is None:
             raise HTTPException(404, "record not found")
         return dict(row)
@@ -135,15 +140,18 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
 
     def replay(conn, tenant, operation_id, payload):
         digest = hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
-        row = conn.execute("SELECT * FROM operations WHERE tenant=? AND operation_id=?",
-                           (tenant, operation_id)).fetchone()
+        row = conn.execute(
+            "SELECT * FROM operations WHERE tenant=? AND operation_id=?", (tenant, operation_id)
+        ).fetchone()
         if row and row["request_hash"] != digest:
             raise HTTPException(409, "operation identity reused with conflicting content")
         return digest, json.loads(row["result"]) if row else None
 
     def save_operation(conn, tenant, operation_id, digest, entity_id, result):
-        conn.execute("INSERT INTO operations VALUES(?,?,?,?,?,?)",
-                     (tenant, operation_id, digest, "invoice", entity_id, json.dumps(result)))
+        conn.execute(
+            "INSERT INTO operations VALUES(?,?,?,?,?,?)",
+            (tenant, operation_id, digest, "invoice", entity_id, json.dumps(result)),
+        )
 
     @app.get("/health")
     async def health():
@@ -153,9 +161,13 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
     async def reset(body: Reset, request: Request):
         admin(request)
         env = body.environment
-        if (body.seed_version != "crm-seed-v1" or env.seed_version != body.seed_version
-                or env.app != "crm" or set(env.mutations) - MUTATIONS
-                or env.revision != revision(env.mutations)):
+        if (
+            body.seed_version != "crm-seed-v1"
+            or env.seed_version != body.seed_version
+            or env.app != "crm"
+            or set(env.mutations) - MUTATIONS
+            or env.revision != revision(env.mutations)
+        ):
             raise HTTPException(422, "unsupported seed/environment/revision")
         with db() as conn:
             conn.execute("BEGIN IMMEDIATE")
@@ -163,8 +175,9 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
                 conn.execute(f"DELETE FROM {table} WHERE tenant=?", (body.tenant,))
             conn.execute("INSERT INTO tenants VALUES(?,?)", (body.tenant, env.model_dump_json()))
             for name in CUSTOMERS:
-                conn.execute("INSERT INTO customers VALUES(?,?,?)",
-                             (str(uuid4()), body.tenant, name))
+                conn.execute(
+                    "INSERT INTO customers VALUES(?,?,?)", (str(uuid4()), body.tenant, name)
+                )
         return {"tenant": body.tenant, "environment": env}
 
     @app.get("/__state")
@@ -173,8 +186,12 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
         with db() as conn:
             result = {"environment": environment(conn, tenant)}
             for table in ("customers", "invoices", "payments"):
-                result[table] = [dict(r) for r in conn.execute(
-                    f"SELECT * FROM {table} WHERE tenant=? ORDER BY id", (tenant,))]
+                result[table] = [
+                    dict(r)
+                    for r in conn.execute(
+                        f"SELECT * FROM {table} WHERE tenant=? ORDER BY id", (tenant,)
+                    )
+                ]
         return result
 
     @app.post("/__chaos")
@@ -191,8 +208,9 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
             else:
                 mutations.discard(body.mutation)
             env.update(mutations=sorted(mutations), revision=revision(mutations))
-            conn.execute("UPDATE tenants SET environment=? WHERE tenant=?",
-                         (json.dumps(env), body.tenant))
+            conn.execute(
+                "UPDATE tenants SET environment=? WHERE tenant=?", (json.dumps(env), body.tenant)
+            )
         return env
 
     @app.get("/login")
@@ -202,15 +220,18 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
     @app.post("/login")
     async def login(request: Request):
         form = await request.form()
-        if (form.get("email") != settings.demo_email
-                or form.get("password") != settings.demo_password):
+        if (
+            form.get("email") != settings.demo_email
+            or form.get("password") != settings.demo_password
+        ):
             raise HTTPException(401, "invalid synthetic credentials")
         tenant = form.get("tenant", "")
         with db() as conn:
             environment(conn, tenant)
             token = secrets.token_urlsafe(32)
-            conn.execute("INSERT INTO sessions VALUES(?,?,?)",
-                         (token, tenant, secrets.token_urlsafe(24)))
+            conn.execute(
+                "INSERT INTO sessions VALUES(?,?,?)", (token, tenant, secrets.token_urlsafe(24))
+            )
         response = RedirectResponse("/customers", status_code=303)
         response.set_cookie("myelin_session", token, httponly=True, samesite="strict")
         return response
@@ -219,10 +240,15 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
     async def customers(request: Request):
         with db() as conn:
             s = session(request, conn)
-            rows = [dict(r) for r in conn.execute(
-                "SELECT * FROM customers WHERE tenant=? ORDER BY name", (s["tenant"],))]
-        return templates.TemplateResponse(request=request, name="customers.html",
-                                          context={"customers": rows})
+            rows = [
+                dict(r)
+                for r in conn.execute(
+                    "SELECT * FROM customers WHERE tenant=? ORDER BY name", (s["tenant"],)
+                )
+            ]
+        return templates.TemplateResponse(
+            request=request, name="customers.html", context={"customers": rows}
+        )
 
     @app.get("/customers/{customer_id}/invoices/new")
     async def new_invoice(customer_id: str, request: Request):
@@ -230,11 +256,17 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
             s = csrf_form(request, conn)
             customer = scoped(conn, "customers", customer_id, s["tenant"])
             env = environment(conn, s["tenant"])
-        return templates.TemplateResponse(request=request, name="new_invoice.html", context={
-            "customer": customer, "csrf": s["csrf"], "operation_id": str(uuid4()),
-            "renamed": "rename_field:invoice_total" in env["mutations"],
-            "reordered": "reorder_fields:invoice" in env["mutations"],
-        })
+        return templates.TemplateResponse(
+            request=request,
+            name="new_invoice.html",
+            context={
+                "customer": customer,
+                "csrf": s["csrf"],
+                "operation_id": str(uuid4()),
+                "renamed": "rename_field:invoice_total" in env["mutations"],
+                "reordered": "reorder_fields:invoice" in env["mutations"],
+            },
+        )
 
     @app.post("/customers/{customer_id}/invoices")
     async def create_invoice(customer_id: str, request: Request):
@@ -265,15 +297,32 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
             if not isinstance(description, str) or not description.strip():
                 raise HTTPException(422, "description required")
             op = identity(request, form)
-            payload = {"kind": "create_invoice", "customer_id": customer_id,
-                       "description": description, "quantity": quantity,
-                       "unit_price_cents": unit, "total_cents": total, "due_date": due}
+            payload = {
+                "kind": "create_invoice",
+                "customer_id": customer_id,
+                "description": description,
+                "quantity": quantity,
+                "unit_price_cents": unit,
+                "total_cents": total,
+                "due_date": due,
+            }
             digest, result = replay(conn, s["tenant"], op, payload)
             if result is None:
                 invoice_id = str(uuid4())
-                conn.execute("INSERT INTO invoices VALUES(?,?,?,?,?,?,?,?,?)",
-                             (invoice_id, s["tenant"], customer_id, description, quantity,
-                              unit, total, due, "unpaid"))
+                conn.execute(
+                    "INSERT INTO invoices VALUES(?,?,?,?,?,?,?,?,?)",
+                    (
+                        invoice_id,
+                        s["tenant"],
+                        customer_id,
+                        description,
+                        quantity,
+                        unit,
+                        total,
+                        due,
+                        "unpaid",
+                    ),
+                )
                 result = {"location": f"/invoices/{invoice_id}", "invoice_id": invoice_id}
                 save_operation(conn, s["tenant"], op, digest, invoice_id, result)
         return RedirectResponse(result["location"], status_code=303)
@@ -284,11 +333,17 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
             s = csrf_form(request, conn)
             invoice = scoped(conn, "invoices", invoice_id, s["tenant"])
             env = environment(conn, s["tenant"])
-        return templates.TemplateResponse(request=request, name="invoice.html", context={
-            "invoice": invoice, "csrf": s["csrf"], "operation_id": str(uuid4()),
-            "moved": "move_button:mark_paid" in env["mutations"],
-            "consent": "add_modal:consent" in env["mutations"],
-        })
+        return templates.TemplateResponse(
+            request=request,
+            name="invoice.html",
+            context={
+                "invoice": invoice,
+                "csrf": s["csrf"],
+                "operation_id": str(uuid4()),
+                "moved": "move_button:mark_paid" in env["mutations"],
+                "consent": "add_modal:consent" in env["mutations"],
+            },
+        )
 
     @app.post("/invoices/{invoice_id}/pay")
     async def pay(invoice_id: str, request: Request):
@@ -299,15 +354,20 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
             validate_csrf(s, form)
             invoice = scoped(conn, "invoices", invoice_id, s["tenant"])
             op = identity(request, form)
-            digest, result = replay(conn, s["tenant"], op,
-                                    {"kind": "pay", "invoice_id": invoice_id})
+            digest, result = replay(
+                conn, s["tenant"], op, {"kind": "pay", "invoice_id": invoice_id}
+            )
             if result is None:
                 if invoice["status"] == "paid":
                     raise HTTPException(409, "invoice already paid by another operation")
-                conn.execute("INSERT INTO payments VALUES(?,?,?,?)",
-                             (str(uuid4()), s["tenant"], invoice_id, invoice["total_cents"]))
-                conn.execute("UPDATE invoices SET status='paid' WHERE id=? AND tenant=?",
-                             (invoice_id, s["tenant"]))
+                conn.execute(
+                    "INSERT INTO payments VALUES(?,?,?,?)",
+                    (str(uuid4()), s["tenant"], invoice_id, invoice["total_cents"]),
+                )
+                conn.execute(
+                    "UPDATE invoices SET status='paid' WHERE id=? AND tenant=?",
+                    (invoice_id, s["tenant"]),
+                )
                 result = {"location": f"/invoices/{invoice_id}", "invoice_id": invoice_id}
                 save_operation(conn, s["tenant"], op, digest, invoice_id, result)
         return RedirectResponse(result["location"], status_code=303)
@@ -318,13 +378,24 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
             # Waits for writers: absent is definitive after an in-progress transaction finishes.
             conn.execute("BEGIN IMMEDIATE")
             s = session(request, conn)
-            row = conn.execute("SELECT * FROM operations WHERE tenant=? AND operation_id=?",
-                               (s["tenant"], operation_id)).fetchone()
+            row = conn.execute(
+                "SELECT * FROM operations WHERE tenant=? AND operation_id=?",
+                (s["tenant"], operation_id),
+            ).fetchone()
         if row is None:
-            return {"status": "absent", "request_hash": None, "entity_kind": None,
-                    "entity_id": None, "result": None}
-        return {"status": "applied", "request_hash": row["request_hash"],
-                "entity_kind": row["entity_kind"], "entity_id": row["entity_id"],
-                "result": json.loads(row["result"])}
+            return {
+                "status": "absent",
+                "request_hash": None,
+                "entity_kind": None,
+                "entity_id": None,
+                "result": None,
+            }
+        return {
+            "status": "applied",
+            "request_hash": row["request_hash"],
+            "entity_kind": row["entity_kind"],
+            "entity_id": row["entity_id"],
+            "result": json.loads(row["result"]),
+        }
 
     return app

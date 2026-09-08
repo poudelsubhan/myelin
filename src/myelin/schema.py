@@ -1,4 +1,5 @@
 """Versioned persistence contracts. No live handles or secrets belong in these models."""
+
 from __future__ import annotations
 
 import hashlib
@@ -211,12 +212,18 @@ class Program(Contract):
                 if isinstance(step, Branch):
                     visit(step.then)
                     visit(step.otherwise)
+
         visit(self.steps)
         return self
 
     def canonical_json(self) -> str:
-        return json.dumps(self.model_dump(mode="json"), sort_keys=True, separators=(",", ":"),
-                          ensure_ascii=False, allow_nan=False)
+        return json.dumps(
+            self.model_dump(mode="json"),
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        )
 
     def content_hash(self) -> str:
         return hashlib.sha256(self.canonical_json().encode()).hexdigest()

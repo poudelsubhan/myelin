@@ -4,7 +4,7 @@ crm:
 expense:
 	@echo 'Phase 5 pending its entry gate'; exit 1
 serve:
-	@echo 'Phase 1 pending Phase 0 live gate'; exit 1
+	uv run uvicorn myelin.console.app:create_app --factory --host 127.0.0.1 --port 8100
 test:
 	uv run pytest -q
 lint:

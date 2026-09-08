@@ -9,15 +9,25 @@ ADMIN = {"X-Myelin-Demo-Token": "test-admin-only"}
 
 
 def reset(client, tenant="a", mutations=()):
-    env = {"app": "crm", "revision": revision(mutations), "mutations": list(mutations),
-           "seed_version": "crm-seed-v1"}
-    return client.post("/__reset", headers=ADMIN, json={
-        "tenant": tenant, "seed_version": "crm-seed-v1", "environment": env})
+    env = {
+        "app": "crm",
+        "revision": revision(mutations),
+        "mutations": list(mutations),
+        "seed_version": "crm-seed-v1",
+    }
+    return client.post(
+        "/__reset",
+        headers=ADMIN,
+        json={"tenant": tenant, "seed_version": "crm-seed-v1", "environment": env},
+    )
 
 
 def login(client, tenant="a"):
-    return client.post("/login", data={"email": "demo@test.local", "password": "synthetic-password",
-                                      "tenant": tenant}, follow_redirects=False)
+    return client.post(
+        "/login",
+        data={"email": "demo@test.local", "password": "synthetic-password", "tenant": tenant},
+        follow_redirects=False,
+    )
 
 
 def state(client, tenant="a"):
@@ -32,8 +42,12 @@ def form(client, tenant="a"):
     customer = state(client, tenant)["customers"][0]["id"]
     page = client.get(f"/customers/{customer}/invoices/new")
     return f"/customers/{customer}/invoices", {
-        "csrf": token(page.text), "operation_id": "create-1", "description": 'Quote " & café',
-        "quantity": "3", "unit_price_cents": "1999", "total_cents": "5997",
+        "csrf": token(page.text),
+        "operation_id": "create-1",
+        "description": 'Quote " & café',
+        "quantity": "3",
+        "unit_price_cents": "1999",
+        "total_cents": "5997",
         "due_date": "2028-02-29",
     }
 
@@ -54,9 +68,15 @@ def test_csrf_total_and_date_reject_before_writes(client):
     reset(client)
     login(client)
     url, data = form(client)
-    for bad in ({"csrf": "bad"}, {"total_cents": "5998"}, {"quantity": "3.0"},
-                {"unit_price_cents": "-1"}, {"due_date": "2027-02-29"},
-                {"due_date": "20280229"}, {"description": ""}):
+    for bad in (
+        {"csrf": "bad"},
+        {"total_cents": "5998"},
+        {"quantity": "3.0"},
+        {"unit_price_cents": "-1"},
+        {"due_date": "2027-02-29"},
+        {"due_date": "20280229"},
+        {"description": ""},
+    ):
         assert client.post(url, data=data | bad).status_code in (403, 422)
         assert state(client)["invoices"] == []
     assert client.get("/api/operations/create-1").json()["status"] == "absent"
@@ -117,8 +137,15 @@ def test_tenant_isolation_and_same_operation_ids(client):
     assert len(state(client, "a")["invoices"]) == 1
 
 
-@pytest.mark.parametrize("mutation", ["rename_field:invoice_total", "reorder_fields:invoice",
-                                      "move_button:mark_paid", "add_modal:consent"])
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "rename_field:invoice_total",
+        "reorder_fields:invoice",
+        "move_button:mark_paid",
+        "add_modal:consent",
+    ],
+)
 def test_exact_mutation_reset_and_revision(client, mutation):
     assert reset(client, mutations=[mutation]).status_code == 200
     login(client)
@@ -140,8 +167,12 @@ def test_operation_header_precedence(client):
     reset(client)
     login(client)
     url, data = form(client)
-    assert client.post(url, data=data, headers={"X-Myelin-Operation-ID": "runtime-op"},
-                       follow_redirects=False).status_code == 303
+    assert (
+        client.post(
+            url, data=data, headers={"X-Myelin-Operation-ID": "runtime-op"}, follow_redirects=False
+        ).status_code
+        == 303
+    )
     assert client.get("/api/operations/runtime-op").json()["status"] == "applied"
     assert client.get("/api/operations/create-1").json()["status"] == "absent"
 
@@ -153,5 +184,7 @@ def test_chaos_validation(client):
     changed = client.post("/__chaos", headers=ADMIN, json=body)
     assert changed.status_code == 200
     assert changed.json()["revision"] == revision([body["mutation"]])
-    assert client.post("/__chaos", headers=ADMIN,
-                       json=body | {"mutation": "not-real"}).status_code == 422
+    assert (
+        client.post("/__chaos", headers=ADMIN, json=body | {"mutation": "not-real"}).status_code
+        == 422
+    )

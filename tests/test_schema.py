@@ -10,8 +10,9 @@ from myelin.schema import GateRequest, Program, Trace
 FIXTURES = Path(__file__).parent / "fixtures/contracts"
 
 
-@pytest.mark.parametrize("name,cls", [
-    ("program", Program), ("trace", Trace), ("gate_request", GateRequest)])
+@pytest.mark.parametrize(
+    "name,cls", [("program", Program), ("trace", Trace), ("gate_request", GateRequest)]
+)
 def test_json_roundtrip_and_unknown_fields(name, cls):
     obj = cls.model_validate_json((FIXTURES / f"{name}.json").read_text())
     assert cls.model_validate_json(obj.model_dump_json()) == obj

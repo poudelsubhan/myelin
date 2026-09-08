@@ -1,4 +1,5 @@
 """Runtime interfaces frozen before engine consumers; unavailable is never success."""
+
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import Any, Protocol
@@ -30,29 +31,53 @@ class RawObservation:
 
 class BrowserSession(Protocol):
     async def open(self, environment: EnvironmentSpec, tenant: str) -> None: ...
-    async def perform(self, action_id: str, operation: str, target: LocatorSpec | None,
-                      resolved_arguments: dict, operation_id: str | None = None) -> Any: ...
-    async def request(self, request_id: str, method: str, url: str, headers: dict,
-                      body: Any, operation_id: str | None = None) -> Any: ...
+    async def perform(
+        self,
+        action_id: str,
+        operation: str,
+        target: LocatorSpec | None,
+        resolved_arguments: dict,
+        operation_id: str | None = None,
+    ) -> Any: ...
+    async def request(
+        self,
+        request_id: str,
+        method: str,
+        url: str,
+        headers: dict,
+        body: Any,
+        operation_id: str | None = None,
+    ) -> Any: ...
     async def snapshot(self) -> RawObservation: ...
     async def close(self) -> None: ...
 
 
 class Recorder(Protocol):
-    async def __call__(self, workflow: str, inputs: dict, environment: EnvironmentSpec,
-                       session: BrowserSession | None = None,
-                       checkpoint: Checkpoint | None = None,
-                       remaining_goal: str | None = None) -> Trace: ...
+    async def __call__(
+        self,
+        workflow: str,
+        inputs: dict,
+        environment: EnvironmentSpec,
+        session: BrowserSession | None = None,
+        checkpoint: Checkpoint | None = None,
+        remaining_goal: str | None = None,
+    ) -> Trace: ...
 
 
 class Executor(Protocol):
-    async def __call__(self, program: Program, inputs: dict, environment: EnvironmentSpec,
-                       session: BrowserSession | None = None) -> RunResult: ...
+    async def __call__(
+        self,
+        program: Program,
+        inputs: dict,
+        environment: EnvironmentSpec,
+        session: BrowserSession | None = None,
+    ) -> RunResult: ...
 
 
 class Verifier(Protocol):
-    def __call__(self, workflow: str, before_state: dict, after_state: dict,
-                 inputs: dict, policy: dict) -> list[AssertionResult]: ...
+    def __call__(
+        self, workflow: str, before_state: dict, after_state: dict, inputs: dict, policy: dict
+    ) -> list[AssertionResult]: ...
 
 
 async def unavailable(*args, **kwargs):
