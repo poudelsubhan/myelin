@@ -23,7 +23,12 @@ def values(value):
             yield from values(child)
 
 
-def validate_dataflow(program, input_keys):
+def validate_dataflow(
+    program, input_keys, *, definitions_after=None, secret_definitions_before=None
+):
+    definitions_after = definitions_after or {}
+    secret_definitions_before = secret_definitions_before or {}
+
     def check(items, variables, secrets):
         for ref in values(items):
             available = {"input": input_keys, "variable": variables, "secret": secrets}[ref.kind]
@@ -33,6 +38,7 @@ def validate_dataflow(program, input_keys):
     def walk(steps, variables, secrets, completed):
         variables, secrets, completed = set(variables), set(secrets), set(completed)
         for step in steps:
+            secrets.update(secret_definitions_before.get(step.id, []))
             if not set(step.depends_on) <= completed:
                 raise BindingError(f"unavailable dependency for {step.id}")
             check([step.pre, step.resume_url], variables, secrets)
@@ -53,6 +59,7 @@ def validate_dataflow(program, input_keys):
             else:
                 check(step.arguments, variables, secrets)
                 variables.add("current_url")
+            variables.update(definitions_after.get(step.id, []))
             check(step.post, variables, secrets)
             completed.add(step.id)
         return variables, secrets, completed

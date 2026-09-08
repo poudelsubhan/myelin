@@ -99,7 +99,7 @@ class RecordedAction(Contract):
     response_id: str
     call_id: str
     intent: str
-    operation: Literal["navigate", "click", "fill", "select", "check", "submit", "inspect"]
+    operation: Literal["navigate", "click", "fill", "select", "check", "submit", "inspect", "press"]
     target: LocatorSpec | None = None
     arguments: dict[str, ValueRef]
     before_id: str
@@ -165,7 +165,7 @@ class HttpStep(StepCommon):
 
 class UiStep(StepCommon):
     kind: Literal["ui"] = "ui"
-    action: Literal["navigate", "click", "fill", "select", "check", "submit"]
+    action: Literal["navigate", "click", "fill", "select", "check", "submit", "press"]
     target: LocatorSpec | None = None
     arguments: dict[str, ValueRef]
 

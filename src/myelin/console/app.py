@@ -96,9 +96,16 @@ def create_app(services: Services | None = None):
         await asyncio.gather(*jobs, return_exceptions=True)
         for session in sessions.values():
             await session.close()
+        await live_engine.profiles.close()
 
     app = FastAPI(title="Myelin", lifespan=lifespan)
     app.state.bus = bus
+    from myelin.live.orchestration import LiveOrchestrator
+    from myelin.live.routes import live_router
+
+    live_engine = LiveOrchestrator(settings, settings.runs_dir.parent / ".local/myelin")
+    app.state.live = live_engine
+    app.include_router(live_router(live_engine, jobs))
 
     async def run_job(run_id, body):
         started = time.monotonic()

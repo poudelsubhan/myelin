@@ -1,0 +1,53 @@
+{
+  "duration_seconds": 60,
+  "file": "live-demo.mp4",
+  "sha256": "675542a09266c6046f45522712be441ab71df6c7d4af50677999f85bac2ba75a",
+  "type": "actual live execution and console footage; recorded learning clearly labelled",
+  "stage_run_id": "40f02417-46a5-4b43-a2b0-3de74c32538b",
+  "stage_wall_ms": 20765,
+  "stage_model_calls": 0,
+  "stage_assertions": 16,
+  "scenes": [
+    {
+      "start_seconds": 0,
+      "duration_seconds": 8,
+      "title": "Astra learns. Myelin reuses.",
+      "narration": "This is Myelin in a real Trello account. GPT six Astra learns the workflow; Myelin turns it into a reusable, checked program."
+    },
+    {
+      "start_seconds": 8,
+      "duration_seconds": 14,
+      "title": "Fresh input \u2192 verified outcome",
+      "narration": "This is a fresh recorded execution, sped up. It creates the card, saves the brief and date, adds the checklist, and verifies sixteen business assertions. Twenty-one seconds. Zero model calls."
+    },
+    {
+      "start_seconds": 22,
+      "duration_seconds": 10,
+      "title": "Five tasks. Same links. Zero calls.",
+      "narration": "The console also replays five completed tasks. Every row returns its original link with zero calls and no extra cards."
+    },
+    {
+      "start_seconds": 32,
+      "duration_seconds": 8,
+      "title": "The teacher is GPT-6 Astra.",
+      "narration": "These are Astra\u2019s recorded browser actions. Inputs and effects become reusable bindings, while the model handles discovery."
+    },
+    {
+      "start_seconds": 40,
+      "duration_seconds": 10,
+      "title": "Evidence becomes executable code.",
+      "narration": "Before dispatch, the journal commits each effect key. An observed write uses fresh authentication. Astra repaired one induced locator failure; two new canaries passed."
+    },
+    {
+      "start_seconds": 50,
+      "duration_seconds": 10,
+      "title": "Built with Astra. Checked with evidence.",
+      "narration": "We built and debugged Myelin with Astra. Our original demos verify native asynchronous tools, live steering, and hosted patching. One hundred two tests pass; fifty-four program hashes stay unchanged."
+    }
+  ],
+  "narration": "offline macOS Samantha; no media API calls",
+  "source_learning": "927a12b5-c3ef-41e3-98c3-4a90eb76f395",
+  "source_repair_candidate": "08a7bad0fba04cf0a1dc5a4020071e9ade628b2775c82ff9de3b5e1bea0d440e",
+  "video_frames": 1800,
+  "fps": 30
+}

@@ -18,3 +18,8 @@ myelin-plan-review.md
 
 # Private implementation plan
 myelin-phase-plan.md
+myelin-live-phase-plan.md
+
+# Live accounts, browser profiles, task inputs and private evidence.
+.local/
+**/storage-state*.json

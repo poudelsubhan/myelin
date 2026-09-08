@@ -13,6 +13,7 @@ dependencies = [
     "openai>=1.68",
     "python-dotenv>=1.0",
     "pyyaml>=6.0",
+    "jsonschema>=4.23",
     "httpx>=0.28",
     "websockets>=16.1.1",
     "openai-agents>=0.22.1",

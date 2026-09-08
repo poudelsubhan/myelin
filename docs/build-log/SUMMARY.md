@@ -13,3 +13,6 @@
 - Phase 6 core regression: demo-7424fc04-3224-40a1-ac56-5d595b946fe4 passed C1–C8 with independent artifact audit.
 
 See [0A](0A.md) for evidence. No core run is labelled full completion.
+
+- Live Phases 1–4: PASS — connected private browser; learned Trello sales task; two UI canaries; durable resume; verified five-row batch; observed HTTP terminal write with two canaries; one-call induced locator repair with two canaries; configuration-only onboarding and public-page extraction.
+- Live Phase 5: final fresh replay PASS (20.765 seconds, zero model calls, 16/16 assertions); original eight sales tasks freshly reverified; 102 tests/lint and 54 unchanged legacy program hashes. Final video and evidence: [live evidence](../live-evidence.md).

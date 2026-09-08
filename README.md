@@ -7,8 +7,24 @@ When an app changes, Myelin reconciles earlier writes, resumes at a browser
 checkpoint, asks Astra for a local repair, and validates the candidate before
 promotion. The reusable artifact is a typed program with source-linked evidence.
 
-[Watch the one-minute demo](docs/media/demo.mp4) ·
+[Watch the final live demo (60 seconds)](docs/media/live-demo.mp4) ·
+[Original demo](docs/media/demo.mp4) ·
 [Build and gate evidence](docs/demo-evidence.md) · [Runbook](docs/runbook.md)
+
+## Live business workflows
+
+Myelin also runs in a connected real browser profile. Open `/live` on the console
+for a private Trello workflow: learn a sales follow-up once, validate on two new
+inputs, then run a serial five-row batch with independent field checks and zero
+model calls. A separate onboarding task and public-page extraction use registered
+configuration through the same runtime.
+
+The live path has its own immutable contracts, account-scoped promotion and durable
+logical-effect journal. An observed final checklist operation also runs over HTTP
+with fresh browser authentication. Uncertain writes stop for read-back instead of
+being repeated. The original owned-app demos remain available at `/`.
+
+[Live runbook](docs/live-runbook.md) · [Measured live evidence](docs/live-evidence.md)
 
 ## Supported workflows
 
@@ -20,7 +36,7 @@ promotion. The reusable artifact is a typed program with source-linked evidence.
 These two integrations demonstrate the reusable recording/compiler/executor design.
 They do **not** establish compatibility with arbitrary online CRMs. A new service
 needs authentication/session integration, workflow scope and independent outcome
-checks. Only synthetic local data is used here.
+checks. The owned-app demos use synthetic local data; the live Trello board uses clearly labelled example leads.
 
 ## What works
 

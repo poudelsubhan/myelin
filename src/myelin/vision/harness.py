@@ -49,6 +49,7 @@ class Recorder:
         purpose=None,
         policy_revision=None,
         astra=None,
+        live_spec=None,
     ):
         if session is None:
             raise ValueError("orchestrator must supply the owned session")
@@ -105,6 +106,42 @@ class Recorder:
             "app_url": self.settings.crm_url,
             "observation": await self._view(session),
         }
+        tools = TOOLS
+        if live_spec:
+            from myelin.live.learning import LiveBatch
+
+            instructions = (
+                "Complete the supplied goal using only visible browser controls. "
+                "Use browser_batch with navigate/click/fill/select/check/submit/inspect/press.  "
+                "Use exact semantic locators role/label/text/test_id. Arguments use typed "
+                "ValueRefs: {kind:input,key:...}, {kind:variable,key:...}, "
+                "or {kind:literal,value:...}. "
+                "press uses a key argument such as Enter, Home or ArrowDown. "
+                "Prefer declared input and derived refs for every task-dependent value. "
+                "Before an action that persists a business change, declare its exact effect_key "
+                "from the frozen effect contract. Other actions use effect_key null. "
+                "The network guard blocks unmapped or mismatched mutations. An effect key is "
+                "a business operation identity, never an arbitrary action label. Do not retry "
+                "unknown writes. Login is handled separately by the connected profile. "
+                "Do not alter the requested outcome. No admin, reset, or reference replays. "
+                "Only visible outcomes read independently can establish completion. "
+                "Keep batches short and inspect after writes."
+            )
+            prompt.update(
+                goal=live_spec.goal,
+                outcome_contract=[a.model_dump(mode="json") for a in live_spec.outcome_contract],
+                effect_contract=[e.model_dump(mode="json") for e in live_spec.effect_contract],
+                available_secret_refs=list(session.secrets),
+                runtime_variables=session.variables,
+                completed_effects=[
+                    r["operation_key"]
+                    for r in session.effects.journal.rows(
+                        session.effects.scope, session.effects.task
+                    )
+                    if r["state"] == "verified"
+                ],
+            )
+            tools = [dict(TOOLS[0], parameters=LiveBatch.model_json_schema())]
         pending = [{"role": "user", "content": json.dumps(prompt)}]
         previous = None
         no_progress = 0
@@ -115,7 +152,7 @@ class Recorder:
                     kwargs = {
                         "instructions": instructions,
                         "input": pending,
-                        "tools": TOOLS,
+                        "tools": tools,
                         "reasoning": {"effort": "high" if checkpoint else "medium"},
                     }
                     if previous:
@@ -142,7 +179,9 @@ class Recorder:
                     for call in calls:
                         if call.name != "browser_batch":
                             raise ValueError("unsupported model tool")
-                        batch = Batch.model_validate_json(call.arguments)
+                        batch = (LiveBatch if live_spec else Batch).model_validate_json(
+                            call.arguments
+                        )
                         for action in batch.actions:
                             if len(trace.actions) >= int(os.getenv("MYELIN_MAX_ACTIONS", "80")):
                                 raise BudgetExceeded("browser action ceiling reached")
@@ -155,6 +194,8 @@ class Recorder:
                                     k: resolve(v, inputs, session.variables, session.secrets)
                                     for k, v in action.arguments.items()
                                 }
+                                if live_spec:
+                                    session.next_effect_key = action.effect_key
                                 await session.perform(
                                     action_id, action.operation, action.target, args
                                 )
@@ -184,6 +225,8 @@ class Recorder:
                             if no_progress >= 8:
                                 raise BudgetExceeded("repeated no-progress actions")
                             if error:
+                                if live_spec and session.effects.blocked:
+                                    raise RuntimeError("live write boundary stopped recording")
                                 break
                         view = await self._view(session)
                         pending.append(

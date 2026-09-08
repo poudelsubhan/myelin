@@ -2,11 +2,11 @@ import time
 from urllib.parse import urljoin
 from uuid import uuid4
 
-from myelin.adapters.crm import compatible
 from myelin.contracts import ExecutionContext
 from myelin.program.bindings import bound_url, html_input, json_path, resolve
 from myelin.program.dataflow import validate_dataflow
 from myelin.program.predicates import evaluate
+from myelin.runtime.demo import DemoRuntime
 from myelin.schema import Branch, Checkpoint, FailureContext, HttpStep, RunResult
 from myelin.verification.oracle import verify
 
@@ -18,8 +18,9 @@ class StepFailure(RuntimeError):
 
 
 class Executor:
-    def __init__(self, admin, emit):
+    def __init__(self, admin, emit, runtime=None):
         self.admin, self.emit = admin, emit
+        self.runtime = runtime or DemoRuntime(admin, verifier=verify)
 
     async def __call__(
         self,
@@ -35,13 +36,18 @@ class Executor:
     ):
         if session is None:
             raise ValueError("orchestrator must supply the owned session")
-        if not allow_drift and not compatible(program, environment):
+        if not allow_drift and not self.runtime.compatible(program, environment):
             raise ValueError("unsupported program/environment selection")
-        validate_dataflow(program, set(inputs))
-        start = time.monotonic()
-        before = (
-            before_state if before_state is not None else await self.admin.state(session.tenant)
+        validate_dataflow(
+            program,
+            set(inputs),
+            definitions_after=self.runtime.definitions_after(program),
+            secret_definitions_before=getattr(
+                self.runtime, "secret_definitions_before", lambda _: {}
+            )(program),
         )
+        start = time.monotonic()
+        before = before_state if before_state is not None else await self.runtime.observe(session)
         context = ExecutionContext(
             session,
             inputs,
@@ -72,6 +78,7 @@ class Executor:
                     completed.append(step.id)
                     await self.emit("program.step", {"step_id": step.id, "success": True})
                     continue
+                await self.runtime.before_step(session, step, inputs)
                 raw = await session.snapshot()
                 obs = session.store.observation(raw, step.id)
                 observations.update(url=raw.url, aria=raw.aria)
@@ -174,10 +181,7 @@ class Executor:
                             raise StepFailure(
                                 "precondition", "declared HTTP-to-UI resume URL", None
                             )
-                        if environment.app == "expense":
-                            from myelin.adapters.expense import resume
-
-                            await resume(session, resume_url)
+                        await self.runtime.resume(session, resume_url)
                         if step.action != "navigate":
                             await session.perform(
                                 step.id + ":resume", "navigate", None, {"url": resume_url}
@@ -189,11 +193,12 @@ class Executor:
                             e.method not in ("GET", "HEAD", "OPTIONS")
                             for e in session.network[network_offset:]
                         )
+                await self.runtime.after_step(session, step, inputs)
                 raw = await session.snapshot()
                 obs = session.store.observation(raw, step.id)
                 context.variables["current_url"] = raw.url
                 observations.update(
-                    url=raw.url, aria=raw.aria, business=await self.admin.state(session.tenant)
+                    url=raw.url, aria=raw.aria, business=await self.runtime.observe(session)
                 )
                 if not all(evaluate(p, context, observations) for p in step.post):
                     raise StepFailure(
@@ -211,13 +216,20 @@ class Executor:
             if checkpoint:
                 kind = exc.kind if isinstance(exc, StepFailure) else "transport"
                 effect = "unknown" if sent and step.effect == "write" else "not_applied"
-                if kind == "status" and observations["response"].get("status") in (
-                    401,
-                    403,
-                    404,
-                    422,
+                if (
+                    self.runtime.is_demo
+                    and kind == "status"
+                    and observations["response"].get("status")
+                    in (
+                        401,
+                        403,
+                        404,
+                        422,
+                    )
                 ):
                     effect = "not_applied"
+                if not self.runtime.is_demo:
+                    effect = self.runtime.effect_status()
                 failure = FailureContext(
                     checkpoint=checkpoint,
                     request_id=None,
@@ -235,10 +247,8 @@ class Executor:
                 "program.step",
                 {"step_id": failed_step, "success": False, "error": type(exc).__name__},
             )
-        after = await self.admin.state(session.tenant)
-        assertions = verify(
-            program.workflow, before, after, inputs, {"revision": program.policy_revision}
-        )
+        after = await self.runtime.observe(session)
+        assertions = await self.runtime.verify(session, program, before, after, inputs)
         final_obs = session.store.observation(await session.snapshot())
         success = failure is None and failed_step is None and all(a.passed for a in assertions)
         result = RunResult(
