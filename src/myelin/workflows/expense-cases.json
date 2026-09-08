@@ -1,0 +1,90 @@
+[
+  {
+    "case_id": "expense-1",
+    "seed_version": "expense-seed-v1",
+    "inputs": {
+      "merchant": "Northwind",
+      "amount_cents": 49999,
+      "category": "Travel",
+      "date": "2026-09-01",
+      "receipt_text": "Receipt 1: \"checked\""
+    }
+  },
+  {
+    "case_id": "expense-2",
+    "seed_version": "expense-seed-v1",
+    "inputs": {
+      "merchant": "Threshold Equal",
+      "amount_cents": 50000,
+      "category": "Meals",
+      "date": "2026-09-02",
+      "receipt_text": "Receipt 2: \"checked\""
+    }
+  },
+  {
+    "case_id": "expense-3",
+    "seed_version": "expense-seed-v1",
+    "inputs": {
+      "merchant": "Threshold Above",
+      "amount_cents": 50001,
+      "category": "Supplies",
+      "date": "2026-09-03",
+      "receipt_text": "Receipt 3: \"checked\""
+    }
+  },
+  {
+    "case_id": "expense-4",
+    "seed_version": "expense-seed-v1",
+    "inputs": {
+      "merchant": "Zero receipt",
+      "amount_cents": 0,
+      "category": "Software",
+      "date": "2026-09-04",
+      "receipt_text": "Receipt 4: \"checked\""
+    }
+  },
+  {
+    "case_id": "expense-5",
+    "seed_version": "expense-seed-v1",
+    "inputs": {
+      "merchant": "Cafe \"Iris\"",
+      "amount_cents": 100,
+      "category": "Travel",
+      "date": "2026-09-05",
+      "receipt_text": "Receipt 5: \"checked\""
+    }
+  },
+  {
+    "case_id": "expense-6",
+    "seed_version": "expense-seed-v1",
+    "inputs": {
+      "merchant": "O'Brien Travel",
+      "amount_cents": 123456,
+      "category": "Meals",
+      "date": "2026-09-06",
+      "receipt_text": "Receipt 6: \"checked\""
+    }
+  },
+  {
+    "case_id": "expense-7",
+    "seed_version": "expense-seed-v1",
+    "inputs": {
+      "merchant": "\u00c9lan Design",
+      "amount_cents": 75000,
+      "category": "Supplies",
+      "date": "2026-09-07",
+      "receipt_text": "Receipt 7: \"checked\""
+    }
+  },
+  {
+    "case_id": "expense-8",
+    "seed_version": "expense-seed-v1",
+    "inputs": {
+      "merchant": "Software & Co",
+      "amount_cents": 2499,
+      "category": "Software",
+      "date": "2026-09-08",
+      "receipt_text": "Receipt 8: \"checked\""
+    }
+  }
+]

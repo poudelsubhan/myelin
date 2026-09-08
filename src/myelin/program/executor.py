@@ -3,8 +3,9 @@ from urllib.parse import urljoin
 from uuid import uuid4
 
 from myelin.adapters.crm import compatible
-from myelin.contracts import ExecutionContext, FeatureUnavailable
+from myelin.contracts import ExecutionContext
 from myelin.program.bindings import bound_url, html_input, json_path, resolve
+from myelin.program.dataflow import validate_dataflow
 from myelin.program.predicates import evaluate
 from myelin.schema import Branch, Checkpoint, FailureContext, HttpStep, RunResult
 from myelin.verification.oracle import verify
@@ -36,6 +37,7 @@ class Executor:
             raise ValueError("orchestrator must supply the owned session")
         if not allow_drift and not compatible(program, environment):
             raise ValueError("unsupported program/environment selection")
+        validate_dataflow(program, set(inputs))
         start = time.monotonic()
         before = (
             before_state if before_state is not None else await self.admin.state(session.tenant)
@@ -58,10 +60,18 @@ class Executor:
         assertions = []
         failed_step = None
         try:
-            for step in program.steps[start_at:]:
+            pending = list(program.steps[start_at:])
+            while pending:
+                item = pending.pop(0)
+                finishing_branch = isinstance(item, tuple)
+                step = item[0] if finishing_branch else item
                 sent = False
-                if isinstance(step, Branch):
-                    raise FeatureUnavailable("branch execution requires Phase 5")
+                if finishing_branch:
+                    if not all(evaluate(p, context, observations) for p in step.post):
+                        raise StepFailure("postcondition", "branch postconditions", observations)
+                    completed.append(step.id)
+                    await self.emit("program.step", {"step_id": step.id, "success": True})
+                    continue
                 raw = await session.snapshot()
                 obs = session.store.observation(raw, step.id)
                 observations.update(url=raw.url, aria=raw.aria)
@@ -89,6 +99,19 @@ class Executor:
                 if any(dep not in completed for dep in step.depends_on):
                     raise StepFailure("precondition", "dependencies completed", completed)
                 session.action_id = step.id
+                if isinstance(step, Branch):
+                    decision = evaluate(step.condition, context, observations)
+                    row = {
+                        "step_id": step.id,
+                        "decision": decision,
+                        "condition": step.condition.model_dump(mode="json"),
+                        "source_steer_id": step.source_steer_id,
+                        "inputs": inputs,
+                    }
+                    session.store.append("branches.jsonl", row)
+                    await self.emit("program.branch", row)
+                    pending = list(step.then if decision else step.otherwise) + [(step,)] + pending
+                    continue
                 if isinstance(step, HttpStep):
 
                     def resolver(r):
@@ -141,6 +164,10 @@ class Executor:
                             raise StepFailure(
                                 "precondition", "declared HTTP-to-UI resume URL", None
                             )
+                        if environment.app == "expense":
+                            from myelin.adapters.expense import resume
+
+                            await resume(session, checkpoint.resume_url)
                         await session.perform(
                             step.id + ":resume", "navigate", None, {"url": checkpoint.resume_url}
                         )
@@ -190,7 +217,7 @@ class Executor:
                         if isinstance(exc, StepFailure)
                         else {"error": type(exc).__name__}
                     ),
-                    remaining_goal="Complete the original invoice task",
+                    remaining_goal=f"Complete the original {program.workflow} task",
                 )
             await self.emit(
                 "program.step",

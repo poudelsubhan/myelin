@@ -10,7 +10,8 @@ promotion. The saved program—not permanent model memory—is the reusable arti
 The current working example creates and pays invoices in an **owned local CRM**.
 It is not a demonstrated connector to arbitrary live CRMs. The CRM makes correct
 amounts, duplicate writes, missing payments and controlled app changes independently
-checkable. A second expense SPA and advanced model interactions remain in scope.
+checkable. A second owned expense SPA now exercises bearer authentication,
+typed branches and an independent expense oracle.
 
 ## What works
 
@@ -22,9 +23,10 @@ checkable. A second expense SPA and advanced model interactions remain in scope.
   repair, and applied-write/lost-response reconciliation.
 - A live console showing source-linked steps, validation and measured usage.
 
-The core demonstration is being rehearsed. Full-scope completion additionally
-requires the retained expense, reference-validation, async, steering and hosted
-compiler-tool evidence. Mock tests are never presented as live capability evidence.
+The `core-demo` tag preserves two successful core rehearsals. A full CRM gate has
+also passed eight program and eight fresh AI reference runs, with native async
+validation and an accepted reasoning-effort update. Full completion still requires
+expense model compilation, live steering, hosted compiler tools and final artifacts. Mock tests are never presented as live capability evidence.
 See [verified build status](docs/build-log/SUMMARY.md) and [run evidence](docs/demo-evidence.md).
 
 ## Run locally
@@ -46,6 +48,7 @@ Start these in separate terminals:
 
 ```sh
 make crm
+make expense
 make serve
 ```
 

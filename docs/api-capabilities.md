@@ -24,8 +24,8 @@ OPENAI_BASE_URL environment variable. Explicit official fallback fixed the bug;
 `tests/test_config.py` protects the empty/custom gateway cases. The failed attempt
 is retained privately, not counted as a successful model response.
 
-Function calling, native async, WebSocket steering, effort updates, hosted shell
-and apply_patch have not yet been live-verified. They remain required later gates.
+Function calling, native async and effort updates are now live-verified below.
+WebSocket steering, hosted shell and apply_patch remain required later gates.
 
 ## Core live integrations
 
@@ -37,4 +37,24 @@ configuration (model usage only). The emitted program passed its independent gat
 
 The official async, steering, reasoning, shell and apply_patch guides were fetched
 for the extension implementations. Reading those guides does not establish live
-feature support; native capability evidence remains pending its respective phase.
+feature support; each native capability requires its own successful live probe.
+
+## Native async and reasoning effort
+
+The [async tool guide](https://developers.openai.com/api/docs/guides/async-tool-calling)
+and [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) informed
+these adapters. Successful live probe:
+`phase5-native-5df7bb29-c615-4314-a5ee-07ac2061a1fd`.
+
+- Native async call: `call_OpNzZHfyHNEGJSDNHv0i7idW`, one original-ID terminal output.
+- Gate: `1ee95c6f-8643-45e4-98d7-6f3a7c626008`, 8/8 program oracles and 8/8 fresh
+  model references, all business projections matching.
+- Independent dependency analysis completed while the gate was still pending:
+  `resp_0f585bdc729d5dd4006aa070f3cf1487d08f675b30ce8a0311`.
+- That continuation inserted `configuration_update` selecting high effort before a
+  user message; request-level medium effort remained unchanged. No automatic
+  compaction or truncation was enabled. Effective effort is recorded locally.
+- Final receipt: `resp_0f585bdc729d5dd4006aa071c60f9487d0b3e1a8a65eda696e`.
+
+The earlier full gate failed three reference calls with API server errors. It is
+retained as a failed gate; the successful probe used a fresh complete suite.

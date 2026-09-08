@@ -213,6 +213,10 @@ def create_app(db_path: Path | None = None, settings: Settings | None = None):
             )
         return env
 
+    @app.get("/")
+    async def home():
+        return RedirectResponse("/login", status_code=307)
+
     @app.get("/login")
     async def login_page(request: Request):
         return templates.TemplateResponse(request=request, name="login.html", context={})

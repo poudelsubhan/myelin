@@ -60,7 +60,7 @@ async def test_gate_exact_counts_and_incomplete_reference_rejected(tmp_path):
     _, _, runner, gate, events = await setup_gate(tmp_path)
     assert (gate.oracle_passes, gate.oracle_total, gate.reference_total) == (8, 8, 0)
     assert events.count("gate.case") == 8
-    with pytest.raises(ValueError, match="Phase 5"):
+    with pytest.raises(ValueError, match="reference coverage"):
         await runner(gate.request.model_copy(update={"reference_mode": "full"}))
     with pytest.raises(ValueError, match="locked"):
         await runner(gate.request.model_copy(update={"suite_hash": "changed"}))

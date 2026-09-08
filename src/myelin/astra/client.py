@@ -1,8 +1,9 @@
+import asyncio
 import json
 import os
 from decimal import Decimal
 
-from openai import AsyncOpenAI
+from openai import APIConnectionError, APIStatusError, AsyncOpenAI
 
 from myelin.config import ROOT
 from myelin.contracts import FeatureUnavailable
@@ -17,6 +18,7 @@ class Astra:
     def __init__(self, settings, store, emit):
         self.settings, self.store, self.emit = settings, store, emit
         self.usage = {}
+        self.effective_efforts = {}
         previous = store.folder / "usage.jsonl"
         if previous.exists():
             for line in previous.read_text().splitlines():
@@ -31,7 +33,34 @@ class Astra:
             return None
         return sum((Decimal(u.usd) for u in self.usage.values()), Decimal(0))
 
+    def effort_update(self, effort, message):
+        if effort not in ("low", "medium", "high", "xhigh", "max", "ultra"):
+            raise ValueError("invalid effort")
+        return [
+            {"type": "configuration_update", "reasoning": {"effort": effort}},
+            {"role": "user", "content": message},
+        ]
+
     async def respond(self, purpose, **kwargs):
+        request_effort = kwargs.get("reasoning", {}).get("effort", "medium")
+        effective = self.effective_efforts.get(kwargs.get("previous_response_id"), request_effort)
+        updates = []
+        pending = kwargs.get("input", [])
+        if isinstance(pending, list):
+            for i, item in enumerate(pending):
+                if item.get("type") == "configuration_update":
+                    if (
+                        i + 1 >= len(pending)
+                        or pending[i + 1].get("role") != "user"
+                        or kwargs.get("context_management")
+                        or kwargs.get("truncation") == "auto"
+                    ):
+                        raise ValueError(
+                            "effort update needs a user item and no automatic compaction/truncation"
+                        )
+                    effective = item["reasoning"]["effort"]
+                    updates.append(item)
+
         if not self.settings.live or not self.settings.api_key:
             raise FeatureUnavailable("Set OPENAI_API_KEY and MYELIN_LIVE=1 for live calls")
         if self.usd is None or self.usd >= self.limit:
@@ -44,9 +73,41 @@ class Astra:
             timeout=self.settings.timeout_s,
             max_retries=0,
         ) as client:
-            response = await client.responses.create(
-                model=self.settings.model, max_output_tokens=8192, **kwargs
-            )
+            for attempt in range(3):
+                try:
+                    response = await client.responses.create(
+                        model=self.settings.model, max_output_tokens=8192, **kwargs
+                    )
+                    break
+                except (APIStatusError, APIConnectionError) as exc:
+                    status = getattr(exc, "status_code", None)
+                    retryable = status is None or status == 429 or status >= 500
+                    self.store.append(
+                        "api-attempts.jsonl",
+                        {
+                            "purpose": purpose,
+                            "attempt": attempt + 1,
+                            "error": type(exc).__name__,
+                            "status": status,
+                            "request_id": getattr(exc, "request_id", None),
+                            "usage": "unknown",
+                            "retrying": retryable and attempt < 2,
+                        },
+                    )
+                    if not retryable or attempt == 2:
+                        raise
+                    await asyncio.sleep(2**attempt)
+        self.effective_efforts[response.id] = effective
+        self.store.append(
+            "effort.jsonl",
+            {
+                "response_id": response.id,
+                "previous_response_id": kwargs.get("previous_response_id"),
+                "request_effort": request_effort,
+                "effective_effort": effective,
+                "updates": updates,
+            },
+        )
         if response.id not in self.usage:
             u = response.usage
             usd = None

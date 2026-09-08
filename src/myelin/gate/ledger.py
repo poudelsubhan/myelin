@@ -92,7 +92,20 @@ class Ledger:
                 complete = (
                     complete
                     and gate.all_references_complete
-                    and all(c.reference_status == "success" and c.outcome_match for c in gate.cases)
+                    and gate.reference_total == len(gate.request.reference_case_ids)
+                    and gate.reference_passes == gate.reference_total
+                    and (
+                        gate.request.reference_mode != "full"
+                        or set(gate.request.reference_case_ids) == set(suite_ids)
+                    )
+                    and all(
+                        c.reference_status == "success"
+                        and c.outcome_match
+                        and c.differences
+                        and all(a.passed for a in c.differences)
+                        for c in gate.cases
+                        if c.case_id in gate.request.reference_case_ids
+                    )
                 )
             if current_hash != expected_parent_hash or program.parent_hash != expected_parent_hash:
                 verdict, rule, reason = (

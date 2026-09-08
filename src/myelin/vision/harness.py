@@ -39,19 +39,31 @@ class Recorder:
         self.settings, self.emit = settings, emit
 
     async def __call__(
-        self, workflow, inputs, environment, session=None, checkpoint=None, remaining_goal=None
+        self,
+        workflow,
+        inputs,
+        environment,
+        session=None,
+        checkpoint=None,
+        remaining_goal=None,
+        purpose=None,
+        policy_revision=None,
+        astra=None,
     ):
         if session is None:
             raise ValueError("orchestrator must supply the owned session")
         store = session.store
-        astra = Astra(self.settings, store, self.emit)
+        astra = astra or Astra(self.settings, store, self.emit)
+        policy_revision = policy_revision or (
+            "crm-policy-v1" if environment.app == "crm" else "expense-policy-v1"
+        )
         initial = store.observation(await session.snapshot())
         trace = Trace(
             run_id=session.run_id,
             workflow=workflow,
             inputs=inputs,
             environment=environment,
-            policy_revision="crm-policy-v1",
+            policy_revision=policy_revision,
             initial_observation=initial.id,
             actions=[],
             usage_response_ids=[],
@@ -75,8 +87,17 @@ class Recorder:
             "After each batch inspect the resulting observation. When the goal is complete, "
             "respond with a concise final message. The independent verifier decides success."
         )
+        goal = "Create the requested customer invoice and mark it paid."
+        if environment.app == "expense":
+            goal = "Create exactly one expense matching the inputs and submit it."
+            goal += (
+                " If amount_cents > 50000, add manager note 'approved by demo'; "
+                "otherwise leave it empty."
+                if policy_revision == "expense-policy-manager-v2"
+                else " Leave the manager note empty."
+            )
         prompt = {
-            "goal": remaining_goal or "Create the requested customer invoice and mark it paid.",
+            "goal": remaining_goal or goal,
             "workflow": workflow,
             "inputs": inputs,
             "app_url": self.settings.crm_url,
@@ -97,7 +118,9 @@ class Recorder:
                     }
                     if previous:
                         kwargs["previous_response_id"] = previous
-                    response = await astra.respond("repair" if checkpoint else "record", **kwargs)
+                    response = await astra.respond(
+                        purpose or ("repair" if checkpoint else "record"), **kwargs
+                    )
                     previous = response.id
                     trace.usage_response_ids.append(response.id)
                     calls = [item for item in response.output if item.type == "function_call"]

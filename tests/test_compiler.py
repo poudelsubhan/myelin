@@ -65,3 +65,45 @@ async def test_json_correction_loop_is_bounded_and_validates_before_return(monke
     )
     assert (await compiler(trace, candidates)).content_hash() == program.content_hash()
     assert events == ["program.compiled"]
+
+
+async def test_injected_provider_runs_before_json_validation(monkeypatch, tmp_path):
+    trace, candidates, program = fixture()
+    call = SimpleNamespace(
+        type="function_call", name="inspect_evidence", call_id="original-call", async_=False
+    )
+    seen = []
+
+    class FakeAstra:
+        def __init__(self, *args):
+            pass
+
+        async def respond(self, *args, **kwargs):
+            seen.append(kwargs)
+            if len(seen) == 1:
+                return SimpleNamespace(id="tool-response", output=[call], output_text="")
+            return SimpleNamespace(
+                id="json-response", output=[], output_text=program.model_dump_json()
+            )
+
+    class Provider:
+        def tools(self):
+            return [{"type": "function", "name": "inspect_evidence"}]
+
+        async def execute(self, c):
+            assert c.call_id == "original-call"
+            return [
+                {"type": "function_call_output", "call_id": c.call_id, "output": "fixture evidence"}
+            ]
+
+    async def emit(*args):
+        pass
+
+    monkeypatch.setattr("myelin.program.compiler.Astra", FakeAstra)
+    compiler = Compiler(
+        SimpleNamespace(crm_url="http://localhost:8101"), TraceStore(tmp_path, "provider"), emit
+    )
+    result = await compiler(trace, candidates, tool_provider=Provider())
+    assert result == program
+    assert seen[1]["previous_response_id"] == "tool-response"
+    assert seen[1]["input"][0]["call_id"] == "original-call"

@@ -13,5 +13,7 @@ def revision(mutations):
 def compatible(program, environment):
     if environment.revision in program.supported_revisions:
         return True
+    if environment.app != "crm":
+        return False
     contract_revision = revision(set(environment.mutations) - PRESENTATION)
     return contract_revision in program.supported_revisions

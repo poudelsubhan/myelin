@@ -14,3 +14,10 @@ to the saved evidence; no fixed speedup claim is used.
 
 Final duration and submission format remain to be checked against the authenticated
 participant guide before packaging. No enrollment or submission is automated.
+
+The user supplied the participant-guide requirement in this session: submission
+requires a short **one-minute** demo video highlighting features, code and
+functionality built during the hackathon. Submission destination supplied by the
+user: https://cerebralvalley.ai/e/openai-gpt-6-astra-sf/hackathon/submit.
+Prepare the artifact and link; do not submit automatically. Finalist timing remains
+an unverified guide-summary assumption unless separately confirmed.

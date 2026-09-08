@@ -31,3 +31,15 @@ def test_usage_counts_do_not_become_secrets_or_corrupt_ids():
     secret = sanitizer.clean({"csrf": "long-csrf-value"})
     assert sanitizer.clean(secret) == secret
     assert sanitizer.clean(row) == row
+
+
+def test_sensitive_field_keeps_typed_secret_reference_but_redacts_literal():
+    sanitizer = Sanitizer()
+    ref = {"kind": "secret", "key": "password"}
+    assert sanitizer.clean({"password": ref}) == {"password": ref}
+    assert sanitizer.clean({"password": {"kind": "literal", "value": "real-password"}}) == {
+        "password": "<secret:empty>"
+    }
+    assert "fresh-confirmation" not in str(
+        sanitizer.clean({"confirmation_token": "fresh-confirmation"})
+    )

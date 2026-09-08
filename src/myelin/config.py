@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -20,6 +20,13 @@ class Settings:
     demo_email: str
     demo_password: str = field(repr=False)
     timeout_s: int
+
+    def for_app(self, app):
+        if app == "crm":
+            return self
+        if app == "expense":
+            return replace(self, crm_url=os.getenv("MYELIN_EXPENSE_URL", "http://localhost:8102"))
+        raise ValueError("unsupported app")
 
     @classmethod
     def load(cls):

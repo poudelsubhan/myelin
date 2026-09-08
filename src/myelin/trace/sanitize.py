@@ -2,7 +2,7 @@ import re
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 SENSITIVE = re.compile(
-    r"^(password|csrf|authorization|cookie|set-cookie|token|access_token|refresh_token|"
+    r"^(password|csrf|authorization|cookie|set-cookie|token|access_token|refresh_token|confirmation_token|"
     r"api_key|x-csrf-token|x-myelin-demo-token)$",
     re.I,
 )
@@ -22,6 +22,14 @@ class Sanitizer:
         return "<secret:empty>"
 
     def clean(self, value, key=""):
+        if (
+            isinstance(value, dict)
+            and set(value) == {"kind", "key"}
+            and value.get("kind") == "secret"
+            and isinstance(value.get("key"), str)
+        ):
+            # A typed binding contains a reference name, not the credential value.
+            return dict(value)
         if SENSITIVE.fullmatch(key):
             return self.register(value)
         if isinstance(value, dict):

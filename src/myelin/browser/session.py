@@ -24,6 +24,7 @@ class Session:
         self.network = []
         self.pending = set()
         self.requests = {}
+        self.inflight = {}
         self.http_requests = 0
         self.ui_actions = 0
         self.variables = {}
@@ -76,6 +77,7 @@ class Session:
         await route.continue_(headers=headers)
 
     def _on_request(self, request):
+        self.inflight[request] = asyncio.get_running_loop().create_future()
         body = request.post_data
         if body:
             try:
@@ -123,17 +125,31 @@ class Session:
                         event.response_body = text
         except Exception:
             event.body_omitted_reason = "response_body_unavailable"
+        if event.url.endswith("/api/login") and isinstance(event.response_body, dict):
+            token = event.response_body.get("token")
+            if isinstance(token, str):
+                self.secrets["bearer_token"] = token
+                self.store.sanitizer.register(token, "bearer_token")
         self.store.append("network.jsonl", event)
+        future = self.inflight.pop(response.request, None)
+        if future and not future.done():
+            future.set_result(None)
 
     def _on_failed(self, request):
+        future = self.inflight.pop(request, None)
+        if future and not future.done():
+            future.set_result(None)
         event = self.requests.get(request)
         if event:
             event.body_omitted_reason = "request_failed"
             self.store.append("network.jsonl", event)
 
     async def drain(self):
-        if self.pending:
-            await asyncio.gather(*list(self.pending))
+        # Owned apps use finite requests. Wait for SPA writes already sent by this action,
+        # including requests whose response event has not arrived yet.
+        async with asyncio.timeout(15):
+            while self.pending or self.inflight:
+                await asyncio.gather(*list(self.pending), *list(self.inflight.values()))
 
     def locator(self, target):
         if target is None:
@@ -175,16 +191,24 @@ class Session:
             self.operation_id = None
 
     async def request(
-        self, request_id, method, url, headers, body, operation_id=None, body_kind="json"
+        self, request_id, method, url, headers, body, operation_id=None, body_kind="json", retry=0
     ):
         allow_url(url, self.allowed_origins)
         if any(k.lower().startswith("x-myelin-demo") for k in headers):
             raise ValueError("test administration headers prohibited")
         headers = dict(headers)
+        if self.environment.app == "expense":
+            for key in list(headers):
+                if key.lower() == "authorization" and not headers[key].startswith("Bearer "):
+                    headers[key] = "Bearer " + headers[key]
         if operation_id:
             headers["X-Myelin-Operation-ID"] = operation_id
         self.http_requests += 1
-        kwargs = {"form" if body_kind == "form" else "data": body} if body else {}
+        kwargs = (
+            {"form" if body_kind == "form" else "data": body}
+            if body or (body_kind == "json" and method not in ("GET", "HEAD"))
+            else {}
+        )
         response = await self.context.request.fetch(
             url, method=method, headers=headers, max_redirects=0, **kwargs
         )
@@ -218,6 +242,15 @@ class Session:
         if self.lose_response_step == self.action_id:
             self.lose_response_step = None
             raise ConnectionError("Injected applied-write/lost-response after handler completion")
+        if response.status == 429 and method in ("GET", "HEAD") and retry < 2:
+            try:
+                delay = min(1.0, max(0.0, float(response.headers.get("retry-after", "0.1"))))
+            except ValueError:
+                delay = 0.1
+            await asyncio.sleep(delay)
+            return await self.request(
+                str(uuid4()), method, url, headers, body, operation_id, body_kind, retry + 1
+            )
         return result
 
     async def snapshot(self):

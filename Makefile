@@ -1,8 +1,8 @@
 .PHONY: crm expense serve test lint smoke demo-core demo-full
 crm:
-	uv run uvicorn apps.crm.app:create_app --factory --host 127.0.0.1 --port 8101
+	uv run uvicorn apps.crm.app:create_app --factory --host 127.0.0.1 --port 8101 --no-access-log
 expense:
-	@echo 'Phase 5 pending its entry gate'; exit 1
+	uv run uvicorn apps.expense.app:create_app --factory --host 127.0.0.1 --port 8102
 serve:
 	uv run uvicorn myelin.console.app:create_app --factory --host 127.0.0.1 --port 8100
 test:

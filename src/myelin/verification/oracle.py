@@ -4,6 +4,10 @@ from myelin.schema import AssertionResult
 
 
 def verify(workflow, before_state, after_state, inputs, policy):
+    if workflow == "expense.submit_expense":
+        from myelin.verification.expense import verify as verify_expense
+
+        return verify_expense(before_state, after_state, inputs, policy)
     if workflow != "crm.create_invoice":
         raise ValueError("unsupported oracle workflow")
     assertions = []

@@ -1,0 +1,12 @@
+workflow: expense.submit_expense
+app: expense
+seed_version: expense-seed-v1
+policies:
+  expense-policy-v1: Submit one matching expense with an empty manager note.
+  expense-policy-manager-v2: Submit one matching expense; manager note is approved by demo iff amount_cents > 50000.
+inputs:
+  merchant: string
+  amount_cents: integer
+  category: string
+  date: ISO date
+  receipt_text: string

@@ -34,67 +34,59 @@ def refs(value):
 
 def validate_program(program, trace, candidates, allowed_origins):
     action_ids = {a.id for a in trace.actions if a.outcome == "success"}
-    variables, secrets, completed = set(), {"email", "password", "tenant"}, set()
+    from myelin.program.dataflow import validate_dataflow
+
     input_keys = set(trace.inputs)
     if program.workflow != trace.workflow or program.app != trace.environment.app:
         raise BindingError("program workflow/app does not match trace")
     if trace.run_id not in program.compiled_from:
         raise BindingError("missing compilation provenance")
-    for step in program.steps:
-        if isinstance(step, Branch):
-            raise BindingError("branches require Phase 5")
-        if not set(step.source_action_ids) <= action_ids:
-            raise BindingError("unknown/failed source action ID")
-        if not set(step.depends_on) <= completed:
-            raise BindingError("unavailable step dependency")
-        # Postconditions may consume this operation's extracts; pre/actions may not.
-        phase_values = [step.pre, step.resume_url]
-        if isinstance(step, HttpStep):
-            phase_values += [step.url, step.path_params, step.query, step.headers, step.body]
-            grounded = [
-                c.step
-                for c in candidates
-                if c.confidence == "high"
-                and set(step.source_action_ids) == set(c.source_action_ids)
-            ]
-            fields = (
-                "method",
-                "url",
-                "path_params",
-                "query",
-                "headers",
-                "body_kind",
-                "body",
-                "extract",
-            )
-            if not any(all(getattr(step, k) == getattr(c, k) for k in fields) for c in grounded):
-                raise BindingError(f"HTTP step {step.id} differs from supported observed candidate")
-        else:
-            phase_values += [step.arguments]
-            if step.action == "navigate":
+    validate_dataflow(program, input_keys)
+    marks = {m.id: m for m in trace.steer_marks if m.accepted}
+    has_http_write = False
+
+    def walk(steps):
+        nonlocal has_http_write
+        for step in steps:
+            if not set(step.source_action_ids) <= action_ids:
+                raise BindingError("unknown/failed source action ID")
+            if isinstance(step, Branch):
+                mark = marks.get(step.source_steer_id)
+                if not mark or mark.predicate != step.condition:
+                    raise BindingError("branch must match an accepted explicit policy steer")
+                walk(step.then)
+                walk(step.otherwise)
+            elif isinstance(step, HttpStep):
+                grounded = [
+                    c.step
+                    for c in candidates
+                    if c.confidence == "high"
+                    and set(step.source_action_ids) == set(c.source_action_ids)
+                ]
+                fields = (
+                    "method",
+                    "url",
+                    "path_params",
+                    "query",
+                    "headers",
+                    "body_kind",
+                    "body",
+                    "extract",
+                )
+                if not any(
+                    all(getattr(step, k) == getattr(c, k) for k in fields) for c in grounded
+                ):
+                    raise BindingError(
+                        f"HTTP step {step.id} differs from supported observed candidate"
+                    )
+                has_http_write |= step.effect == "write"
+            elif step.action == "navigate":
                 ref = step.arguments.get("url")
                 if isinstance(ref, LiteralRef):
                     allow_url(ref.value, allowed_origins)
-        for ref in refs(phase_values):
-            if isinstance(ref, NamedRef):
-                available = {"input": input_keys, "variable": variables, "secret": secrets}[
-                    ref.kind
-                ]
-                if ref.key not in available:
-                    raise BindingError(f"unavailable {ref.kind} binding {ref.key}")
-        if isinstance(step, HttpStep):
-            for rule in step.extract:
-                (secrets if rule.secret else variables).add(rule.target_var)
-        variables.add("current_url")
-        for ref in refs(step.post):
-            if (
-                isinstance(ref, NamedRef)
-                and ref.key
-                not in {"input": input_keys, "variable": variables, "secret": secrets}[ref.kind]
-            ):
-                raise BindingError("postcondition references unavailable binding")
-        completed.add(step.id)
-    if not any(isinstance(s, HttpStep) and s.effect == "write" for s in program.steps):
+
+    walk(program.steps)
+    if not has_http_write:
         raise BindingError("compilation requires an observed mutating HTTP operation")
     return program
 
@@ -147,7 +139,8 @@ class Compiler:
         }
         pending = [{"role": "user", "content": json.dumps(payload)}]
         previous = None
-        for attempt in range(3):
+        corrections = 0
+        for attempt in range(20 if tool_provider else 3):
             kwargs = {
                 "instructions": instructions,
                 "input": pending,
@@ -160,6 +153,44 @@ class Compiler:
                 kwargs["tools"] = tool_provider.tools()
             response = await astra.respond("compile", **kwargs)
             previous = response.id
+            calls = [
+                c
+                for c in getattr(response, "output", [])
+                if c.type in ("function_call", "custom_tool_call", "apply_patch_call")
+            ]
+            if calls:
+                if not tool_provider:
+                    raise BindingError("unexpected compiler tool call")
+                pending = []
+                # Dispatch every native async launch before any synchronous wait.
+                ordered = sorted(calls, key=lambda c: not bool(getattr(c, "async_", False)))
+                for call in ordered:
+                    outputs = await tool_provider.execute(call)
+                    pending.extend(outputs if isinstance(outputs, list) else [outputs])
+                if not pending:
+                    pending = [
+                        {
+                            "role": "user",
+                            "content": "Validation is pending. Analyze a dependency. "
+                            "Do not mutate the candidate under test. Then request its results.",
+                        }
+                    ]
+                continue
+            registry = getattr(tool_provider, "registry", None)
+            if registry and any(not c.delivered for c in registry.calls.values()):
+                import asyncio
+
+                await asyncio.gather(
+                    *(c.job for c in registry.calls.values()), return_exceptions=True
+                )
+                pending = registry.completed()
+                pending.append(
+                    {
+                        "role": "user",
+                        "content": "Return the complete Program JSON using the actual tool result.",
+                    }
+                )
+                continue
             try:
                 program = Program.model_validate_json(response.output_text)
                 validate_program(program, trace, candidates, {self.settings.crm_url})
@@ -184,6 +215,9 @@ class Compiler:
                 )
                 return program
             except (ValidationError, BindingError, ValueError) as exc:
+                corrections += 1
+                if corrections >= 3:
+                    raise BindingError("compiler correction limit reached") from exc
                 error = str(exc)[:5000]
                 self.store.append("compiler-errors.jsonl", {"attempt": attempt, "error": error})
                 pending = [

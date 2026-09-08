@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "workflow": "expense.submit_expense",
+  "app": "expense",
+  "version": 1,
+  "parent_hash": null,
+  "input_schema": {},
+  "policy_revision": "expense-policy-v1",
+  "supported_revisions": [
+    "expense-v1"
+  ],
+  "steps": [
+    {
+      "id": "expense-login",
+      "intent": "expense-login",
+      "source_action_ids": [
+        "manual-fixture"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "input",
+          "path": "merchant",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "response",
+          "path": "status",
+          "op": "eq",
+          "expected": {
+            "kind": "literal",
+            "value": 200
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "write",
+      "operation_key": "expense-login",
+      "depends_on": [],
+      "kind": "http",
+      "method": "POST",
+      "url": {
+        "kind": "literal",
+        "value": "/api/login"
+      },
+      "path_params": {},
+      "query": {},
+      "headers": {},
+      "body_kind": "json",
+      "body": {
+        "email": {
+          "kind": "secret",
+          "key": "email"
+        },
+        "password": {
+          "kind": "secret",
+          "key": "password"
+        },
+        "tenant": {
+          "kind": "secret",
+          "key": "tenant"
+        }
+      },
+      "extract": [
+        {
+          "target_var": "bearer_token",
+          "source": "json_path",
+          "expression": "$.token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "expense-list",
+      "intent": "expense-list",
+      "source_action_ids": [
+        "manual-fixture"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "input",
+          "path": "merchant",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "response",
+          "path": "status",
+          "op": "eq",
+          "expected": {
+            "kind": "literal",
+            "value": 200
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "http",
+      "method": "GET",
+      "url": {
+        "kind": "literal",
+        "value": "/api/expenses"
+      },
+      "path_params": {},
+      "query": {},
+      "headers": {
+        "Authorization": {
+          "kind": "secret",
+          "key": "bearer_token"
+        }
+      },
+      "body_kind": "none",
+      "body": {},
+      "extract": []
+    },
+    {
+      "id": "expense-create",
+      "intent": "expense-create",
+      "source_action_ids": [
+        "manual-fixture"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "input",
+          "path": "merchant",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "response",
+          "path": "status",
+          "op": "eq",
+          "expected": {
+            "kind": "literal",
+            "value": 200
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "write",
+      "operation_key": "expense-create",
+      "depends_on": [],
+      "kind": "http",
+      "method": "POST",
+      "url": {
+        "kind": "literal",
+        "value": "/api/expenses"
+      },
+      "path_params": {},
+      "query": {},
+      "headers": {
+        "Authorization": {
+          "kind": "secret",
+          "key": "bearer_token"
+        }
+      },
+      "body_kind": "json",
+      "body": {
+        "merchant": {
+          "kind": "input",
+          "key": "merchant"
+        },
+        "amount_cents": {
+          "kind": "input",
+          "key": "amount_cents"
+        },
+        "category": {
+          "kind": "input",
+          "key": "category"
+        },
+        "date": {
+          "kind": "input",
+          "key": "date"
+        },
+        "receipt_text": {
+          "kind": "input",
+          "key": "receipt_text"
+        }
+      },
+      "extract": [
+        {
+          "target_var": "expense_id",
+          "source": "json_path",
+          "expression": "$.id",
+          "secret": false
+        },
+        {
+          "target_var": "expense_resume",
+          "source": "json_path",
+          "expression": "$.resume_url",
+          "secret": false
+        }
+      ]
+    },
+    {
+      "id": "threshold",
+      "intent": "threshold",
+      "source_action_ids": [
+        "manual-fixture"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "input",
+          "path": "merchant",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "input",
+          "path": "merchant",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": null,
+      "effect": "read",
+      "operation_key": null,
+      "depends_on": [],
+      "kind": "branch",
+      "condition": {
+        "kind": "compare",
+        "source": "input",
+        "path": "amount_cents",
+        "op": "gt",
+        "expected": {
+          "kind": "literal",
+          "value": 50000
+        }
+      },
+      "then": [
+        {
+          "id": "threshold-confirm",
+          "intent": "threshold-confirm",
+          "source_action_ids": [
+            "manual-fixture"
+          ],
+          "pre": [
+            {
+              "kind": "compare",
+              "source": "input",
+              "path": "merchant",
+              "op": "exists",
+              "expected": {
+                "kind": "literal",
+                "value": true
+              }
+            }
+          ],
+          "post": [
+            {
+              "kind": "compare",
+              "source": "input",
+              "path": "merchant",
+              "op": "exists",
+              "expected": {
+                "kind": "literal",
+                "value": true
+              }
+            }
+          ],
+          "resume_url": {
+            "kind": "variable",
+            "key": "expense_resume"
+          },
+          "effect": "read",
+          "operation_key": null,
+          "depends_on": [],
+          "kind": "ui",
+          "action": "check",
+          "target": {
+            "strategy": "label",
+            "value": "Confirm expense above $500",
+            "role": null,
+            "exact": true
+          },
+          "arguments": {
+            "value": {
+              "kind": "literal",
+              "value": true
+            }
+          }
+        }
+      ],
+      "otherwise": [],
+      "rationale": "Handwritten confirmation fixture; not a learned policy.",
+      "source_steer_id": "manual-fixture-no-live-steer"
+    },
+    {
+      "id": "expense-submit",
+      "intent": "expense-submit",
+      "source_action_ids": [
+        "manual-fixture"
+      ],
+      "pre": [
+        {
+          "kind": "compare",
+          "source": "input",
+          "path": "merchant",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "post": [
+        {
+          "kind": "compare",
+          "source": "input",
+          "path": "merchant",
+          "op": "exists",
+          "expected": {
+            "kind": "literal",
+            "value": true
+          }
+        }
+      ],
+      "resume_url": {
+        "kind": "variable",
+        "key": "expense_resume"
+      },
+      "effect": "write",
+      "operation_key": "expense-submit",
+      "depends_on": [],
+      "kind": "ui",
+      "action": "submit",
+      "target": {
+        "strategy": "role",
+        "value": "Submit expense",
+        "role": "button",
+        "exact": true
+      },
+      "arguments": {}
+    }
+  ],
+  "final_post": [
+    {
+      "kind": "compare",
+      "source": "business",
+      "path": "$.expenses[0].status",
+      "op": "eq",
+      "expected": {
+        "kind": "literal",
+        "value": "submitted"
+      }
+    }
+  ],
+  "compiled_from": [
+    "manual-fixture"
+  ],
+  "notes": "Handwritten adapter/branch fixture; no model compilation or live steering."
+}
