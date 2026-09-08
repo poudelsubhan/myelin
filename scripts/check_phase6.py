@@ -81,6 +81,8 @@ async def main():
         (root / "evidence.json").write_text(json.dumps(evidence, indent=2))
         print(json.dumps({k: v for k, v in evidence.items() if k != "runs"}), flush=True)
 
+    return evidence
+
 
 if __name__ == "__main__":
     asyncio.run(main())

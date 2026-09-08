@@ -1,5 +1,6 @@
 import asyncio
 import hmac
+import json
 import re
 import time
 from contextlib import asynccontextmanager
@@ -78,6 +79,14 @@ def create_app(services: Services | None = None):
     steerers = {}
     candidates = CandidateStore(settings.runs_dir.parent / "programs")
     ledger = Ledger(settings.runs_dir / "ledger", candidates)
+    saved = sorted(settings.runs_dir.glob("*/status.json"), key=lambda p: p.stat().st_mtime)
+    for path in saved[-50:]:
+        try:
+            status = json.loads(path.read_text())
+            if status.get("status") not in ("running", "pending"):
+                statuses[path.parent.name] = status
+        except (OSError, ValueError):
+            continue
 
     @asynccontextmanager
     async def lifespan(app):
@@ -309,7 +318,17 @@ def create_app(services: Services | None = None):
     @app.get("/runs/{run_id}")
     async def get_run(run_id: str):
         if run_id not in statuses:
-            raise HTTPException(404, "unknown run")
+            if not re.fullmatch(r"[A-Za-z0-9_-]+", run_id):
+                raise HTTPException(404, "unknown run")
+            path = settings.runs_dir / run_id / "status.json"
+            if not path.is_file():
+                raise HTTPException(404, "unknown run")
+            status = json.loads(path.read_text())
+            if status.get("status") in ("running", "pending"):
+                status.update(
+                    status="interrupted", error="Server restarted; inspect saved evidence"
+                )
+            return status
         return statuses[run_id]
 
     @app.get("/runs")

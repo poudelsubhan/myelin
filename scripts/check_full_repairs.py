@@ -208,6 +208,8 @@ async def main(which):
         (root / "evidence.json").write_text(json.dumps(evidence, indent=2))
         print(json.dumps({k: v for k, v in evidence.items() if k != "repair"}), flush=True)
 
+    return evidence
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

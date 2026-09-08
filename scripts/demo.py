@@ -263,9 +263,16 @@ if __name__ == "__main__":
     modes.add_argument("--full", action="store_true")
     parser.add_argument("--assert", dest="assertions", action="store_true")
     parser.add_argument("--stage", action="store_true")
+    parser.add_argument(
+        "--reuse-evidence",
+        help="Full mode: audit prior live evidence and use only three zero-model smoke runs",
+    )
     args = parser.parse_args()
     if args.full:
-        raise SystemExit(
-            "Full mode remains pending E1-E6 integration; core is not full completion."
-        )
-    asyncio.run(Demo(args.stage).core())
+        from full_demo import run_full
+
+        asyncio.run(run_full(lambda: Demo(args.stage), args.reuse_evidence, args.stage))
+    else:
+        if args.reuse_evidence:
+            parser.error("--reuse-evidence requires --full")
+        asyncio.run(Demo(args.stage).core())

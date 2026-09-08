@@ -5,20 +5,19 @@ import json
 
 import httpx
 
-from myelin.gate.gate import suite, suite_hash
+from myelin.gate.gate import suite
 
 
 async def main():
-    request = {
-        "candidate_hash": "6f83a7afde1d4e02b2e67826242f22557bcc9d986cafb420520724310fd04187",
-        "workflow": "crm.create_invoice",
-        "environment": {"app": "crm", "revision": "crm-v1", "seed_version": "crm-seed-v1"},
-        "policy_revision": "crm-policy-v1",
-        "suite_hash": suite_hash(),
-        "reference_mode": "full",
-        "reference_case_ids": [c.case_id for c in suite()],
-    }
     async with httpx.AsyncClient(base_url="http://localhost:8100", timeout=30) as client:
+        current = (await client.get("/ledger/crm.create_invoice")).json()["current"]
+        if not current:
+            raise ValueError("Run the core demo first to create a verified CRM candidate")
+        gate = (await client.get("/gates/" + current["gate_id"])).json()
+        request = gate["request"] | {
+            "reference_mode": "full",
+            "reference_case_ids": [c.case_id for c in suite()],
+        }
         response = await client.post("/native-gates", json={"request": request})
         response.raise_for_status()
         run_id = response.json()["run_id"]
@@ -31,6 +30,7 @@ async def main():
                 await asyncio.sleep(1)
         print(json.dumps(data), flush=True)
         assert data["status"] == "completed", data
+        return data["evidence"]
 
 
 if __name__ == "__main__":

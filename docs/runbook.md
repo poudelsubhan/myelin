@@ -1,50 +1,77 @@
 # Myelin demonstration runbook
 
-## Start
+## Start and inspect
 
-1. `uv sync --locked` and `uv run playwright install chromium`.
-2. Fill the ignored `.env`; use the official API default unless given an event gateway.
-3. `make crm` in one terminal and `make serve` in another.
-4. Open http://localhost:8100. All displayed events come from the orchestrator.
-5. `uv run python scripts/demo.py --assert --core` runs the complete core sequence.
-   `--stage` pauses between beats. It is separate from full-scope validation.
+```sh
+uv sync --locked
+cp .env.example .env
+uv run playwright install chromium
+```
 
-The demo controller resets the current synthetic demonstration pointer while
-preserving candidate files, ledger history and prior runs. Each case receives an
-isolated tenant, fresh authentication, exact revision/mutation profile and seed.
-Do not remove a promoted candidate to make a new candidate look correct.
+Set the event API key and MYELIN_LIVE=1 only when running model-powered tasks.
+Leave OPENAI_BASE_URL blank for the official API. MYELIN_HEADLESS=1 keeps isolated
+validation browsers out of your desktop; their screenshots still reach the console.
+Start `make crm`, `make expense` and `make serve` in separate terminals. Open
+http://localhost:8100; 8101 and 8102 are the owned target apps.
 
-## Story
+The console can learn a task or execute a promoted program. Recording/compilation
+and full model comparisons consume API budget; program execution does not.
+Completed run history and event replay survive server restarts. The CRM's default
+console action executes the current program to avoid accidental new model work.
 
-Give Myelin a task. Astra operates the browser once, then authors a program from
-its successful trace. Fresh execution uses typed inputs and fresh session values.
-Show the eight independent business checks and zero model comparisons in core
-mode. Show a new input using zero model calls. Move fields/buttons: HTTP survives.
-Rename the request field: the write fails before applying. Resume from the
-checkpoint, let Astra complete the task, and validate a local patch before
-restoration promotion. Show the new input working without AI and rejection of
-incorrect or unnecessarily expensive candidates.
+## Reproduce the engineering gates
 
-Open program steps to inspect their source action and screenshot. Work units are
-HTTP requests + 10 × UI actions, not dollars. Dollars use recorded model usage and
-the dated Standard pricing configuration; unknown pricing stays unknown. Recording
-business-result timing and complete pipeline timing are separate measurements.
+```sh
+uv run pytest -q
+uv run ruff check .
+uv run python scripts/demo.py --assert --core
+uv run python scripts/demo.py --assert --full
+```
 
-## Recovery
+Core mode records, compiles, validates, repairs and rejects bad/costlier candidates.
+Full mode runs core and both architectures, native async, steering, hosted patches,
+and full eight-reference gates. A fresh full run is deliberately model intensive;
+start it only when you intend that API expenditure. `--stage` pauses engineering
+beats, not a promise that a complete validation run fits a short presentation.
+Each run resets only its synthetic tenant. Demo pointer resets preserve immutable
+programs, historical ledger decisions and earlier artifacts.
 
-On an unknown write effect, reconcile via the authenticated operation lookup.
-An absent operation alone does not prove an in-transit handler cannot still write.
-The system stops rather than retrying such an unresolved effect. Applied writes
-resume at the suffix; pre-write contract rejection can resume visual repair.
+The final budget-conserving rehearsals instead use:
 
-API outages: use an explicitly labelled recorded fallback. Never describe a replay
-as a live model response. Core mode remains independently runnable as later phases
-add expense, reference runs, async tools, steering and hosted compiler tooling.
+```sh
+uv run python scripts/demo.py --assert --full --reuse-evidence runs/full-source.json
+```
 
-## Scope
+This audits prior real C1–C8/E1–E5 artifacts, then executes three new tasks with
+zero model calls: repaired CRM field contract, retained CRM UI consent path and
+repaired expense rule. It does **not** rerun model-reference suites or imply their
+responses are new. The source bundle is private; its published audit/IDs and video
+are inspectable in the repository. Fresh full mode creates its own source bundle
+inside the full-demo evidence result and has no dependency on historical run IDs.
 
-These are two owned local app workflows, not a demonstrated connector to arbitrary
-CRMs. No real customer data or production authentication is involved. The oracle
-is deliberately outside the model/program tool surface and validates a finite,
-locked suite. Native async, steering and hosted-tool evidence require real live
-checks in later phases, not mocks. No submission or enrollment is automated.
+## Short presentation
+
+The one-minute video uses edited, clearly labelled evidence. For a finalist slot,
+confirm its length with the event organizer; three minutes plus Q&A was an earlier
+unverified assumption. A concise live sequence is: explain the task and saved
+program, execute a new input, inspect the real repair/promotion evidence, then show
+the expense branch and equality coverage. Keep the full gate artifacts available
+for inspection instead of rerunning dozens of model calls on stage.
+
+If an API fails, play [the recorded fallback](media/demo.mp4) with its replay label.
+Never describe archived model responses as live. Work units are HTTP requests plus
+ten times UI actions; they are not dollars. Model cost uses dated response-level
+pricing; unknown cost remains unknown. Hosted/container charges are not included
+in model-token totals.
+
+## Recovery and limits
+
+Reconcile an unknown write via its normal authenticated operation lookup. Applied
+writes resume after the completed effect; a definite pre-write rejection can be
+repaired. Unknown or in-flight effects stop explicitly. WebSocket recovery also
+requires a confirmed checkpoint and never blindly repeats accepted steering.
+
+The two supported workflows are owned local applications. A new online service
+needs authentication/session integration, explicit workflow scope and independent
+outcome checks. This implementation does not establish arbitrary SaaS compatibility.
+No production data, enrollment or event submission is performed automatically.

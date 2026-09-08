@@ -1,0 +1,71 @@
+{
+  "presentation": "recorded_evidence_replay",
+  "duration_seconds": 60.0,
+  "sha256": "d08ea4c29fdba61f06475d5875686291917b00be3e11164cabd6eeb8873ce9a3",
+  "scenes": [
+    {
+      "start_seconds": 0,
+      "duration_seconds": 6,
+      "title": "Give it a task.",
+      "source_id": "276280a8-4088-4cd5-8e30-5585eae7f875",
+      "narration": "Give Myelin a task. Astra operates the browser and completes it once."
+    },
+    {
+      "start_seconds": 6,
+      "duration_seconds": 8,
+      "title": "The run becomes a program.",
+      "source_id": "e20678a1c27c124d11be0b72abdcea82ff2cf2c5fe812dca4d92be9ac14e405b",
+      "narration": "Myelin compiles the successful trace into a program, binding new inputs, fresh authentication, and response derived identifiers."
+    },
+    {
+      "start_seconds": 14,
+      "duration_seconds": 8,
+      "title": "New input. Zero model calls.",
+      "source_id": "53c5dac8-8ef5-4182-880f-89694b339645",
+      "narration": "A new invoice runs with zero model calls. These measurements and the successful payment check come from the recorded execution."
+    },
+    {
+      "start_seconds": 22,
+      "duration_seconds": 8,
+      "title": "Then the app changes.",
+      "source_id": "cb0b040f-5cbe-4265-948f-3842d079cbfe",
+      "narration": "When the app renames a request field, Myelin detects a rejected write and resumes visual repair from the checkpoint."
+    },
+    {
+      "start_seconds": 30,
+      "duration_seconds": 9,
+      "title": "Repair locally. Verify globally.",
+      "source_id": "f118ce93-1cfb-4d3e-ab65-4f8335d3ebfc",
+      "narration": "Only the broken operation changes. Eight fresh cases check the repair before promotion. The next input again runs without model calls."
+    },
+    {
+      "start_seconds": 39,
+      "duration_seconds": 7,
+      "title": "Incorrect patches stay out.",
+      "source_id": "demo-7424fc04-3224-40a1-ac56-5d595b946fe4",
+      "narration": "Wrong values, duplicate writes, and unnecessary work are rejected. Even a hosted, staged patch must pass validation before adoption."
+    },
+    {
+      "start_seconds": 46,
+      "duration_seconds": 9,
+      "title": "An instruction becomes a rule.",
+      "source_id": "dbceeebf-2466-43d4-8959-7e995b58d53e",
+      "narration": "Live steering becomes an explicit rule. The expense program passes below, equal, and above five hundred dollars against eight fresh model references."
+    },
+    {
+      "start_seconds": 55,
+      "duration_seconds": 5,
+      "title": "Built with inspectable evidence.",
+      "source_id": "6d98fad \u00b7 tests/test_recorder.py",
+      "narration": "The public repository includes the implementation, development fixes, regression tests, and measured evidence."
+    }
+  ],
+  "audio": "Offline macOS Samantha narration; no model/media API used",
+  "new_model_calls": 0,
+  "source_core_demo": "demo-7424fc04-3224-40a1-ac56-5d595b946fe4",
+  "source_extension_proofs": {
+    "steering": "dbceeebf-2466-43d4-8959-7e995b58d53e",
+    "hosted": "f7f20c09-8715-4a44-b3c2-011085c35277",
+    "native_async": "50cf2b09-9330-477b-beca-474b4148b629"
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "rehearsals": [
+    {
+      "demo_id": "full-demo-20b4aeea-d930-4b08-b0bf-bfec164d1dfa",
+      "mode": "full",
+      "started": 1788903678.1818838,
+      "finished": 1788903682.313104,
+      "model_evidence": "reused_verified_live_runs",
+      "new_model_calls": 0,
+      "passed": true,
+      "criteria": {
+        "C1": true,
+        "C2": true,
+        "C3": true,
+        "C4": true,
+        "C5": true,
+        "C6": true,
+        "C7": true,
+        "C8": true,
+        "E1": true,
+        "E2": true,
+        "E3": true,
+        "E4": true,
+        "E5": true,
+        "E6": true
+      },
+      "packaging": {
+        "video_sha256": "d08ea4c29fdba61f06475d5875686291917b00be3e11164cabd6eeb8873ce9a3",
+        "duration_seconds": 60.0
+      },
+      "smoke_runs": [
+        {
+          "run_id": "9cca8ad0-dc5c-4023-81cd-aac6e20fb87f",
+          "candidate_hash": "8b00ed33467398ce21b6676b65f8688e5aae4bf5eb27267b001b650bec3ae38e",
+          "source_gate_id": "f118ce93-1cfb-4d3e-ab65-4f8335d3ebfc",
+          "success": true,
+          "model_calls": 0,
+          "model_usd": "0",
+          "wall_ms": 985,
+          "work_units": 69,
+          "oracle_assertions_passed": true
+        },
+        {
+          "run_id": "9fc2ae68-33a1-4c32-a735-b78759727620",
+          "candidate_hash": "5b4fd2134fdd039f0927d4219b3be4cbd0275a2a5f673fd715512880b36cb9c3",
+          "source_gate_id": "74ab8db8-9bcf-475d-8e9d-52967e1f6367",
+          "success": true,
+          "model_calls": 0,
+          "model_usd": "0",
+          "wall_ms": 1007,
+          "work_units": 99,
+          "oracle_assertions_passed": true
+        },
+        {
+          "run_id": "f8ff0d69-5e49-4590-a6e3-b0d0666ec782",
+          "candidate_hash": "a5666231ea156c45da4fc2fd62cfcad56d325803535b5414ad528b9164d08fd1",
+          "source_gate_id": "f6ebd8f0-eaf2-4e34-94bd-893dd7ef71dc",
+          "success": true,
+          "model_calls": 0,
+          "model_usd": "0",
+          "wall_ms": 724,
+          "work_units": 46,
+          "oracle_assertions_passed": true
+        }
+      ]
+    },
+    {
+      "demo_id": "full-demo-b5b366f4-3c71-490b-a349-8fd3d344d43f",
+      "mode": "full",
+      "started": 1788903782.424475,
+      "finished": 1788903786.5201669,
+      "model_evidence": "reused_verified_live_runs",
+      "new_model_calls": 0,
+      "passed": true,
+      "criteria": {
+        "C1": true,
+        "C2": true,
+        "C3": true,
+        "C4": true,
+        "C5": true,
+        "C6": true,
+        "C7": true,
+        "C8": true,
+        "E1": true,
+        "E2": true,
+        "E3": true,
+        "E4": true,
+        "E5": true,
+        "E6": true
+      },
+      "packaging": {
+        "video_sha256": "d08ea4c29fdba61f06475d5875686291917b00be3e11164cabd6eeb8873ce9a3",
+        "duration_seconds": 60.0
+      },
+      "smoke_runs": [
+        {
+          "run_id": "942cb935-ba96-44db-9a51-42d5ac8f0a0f",
+          "candidate_hash": "8b00ed33467398ce21b6676b65f8688e5aae4bf5eb27267b001b650bec3ae38e",
+          "source_gate_id": "f118ce93-1cfb-4d3e-ab65-4f8335d3ebfc",
+          "success": true,
+          "model_calls": 0,
+          "model_usd": "0",
+          "wall_ms": 951,
+          "work_units": 69,
+          "oracle_assertions_passed": true
+        },
+        {
+          "run_id": "1efb70ca-f1fa-4a70-b91f-11690f7f1374",
+          "candidate_hash": "5b4fd2134fdd039f0927d4219b3be4cbd0275a2a5f673fd715512880b36cb9c3",
+          "source_gate_id": "74ab8db8-9bcf-475d-8e9d-52967e1f6367",
+          "success": true,
+          "model_calls": 0,
+          "model_usd": "0",
+          "wall_ms": 1032,
+          "work_units": 99,
+          "oracle_assertions_passed": true
+        },
+        {
+          "run_id": "d9825f04-56a1-4ad4-b6d9-e21e8f946aa2",
+          "candidate_hash": "a5666231ea156c45da4fc2fd62cfcad56d325803535b5414ad528b9164d08fd1",
+          "source_gate_id": "f6ebd8f0-eaf2-4e34-94bd-893dd7ef71dc",
+          "success": true,
+          "model_calls": 0,
+          "model_usd": "0",
+          "wall_ms": 746,
+          "work_units": 46,
+          "oracle_assertions_passed": true
+        }
+      ]
+    }
+  ],
+  "source_core_demo": "demo-7424fc04-3224-40a1-ac56-5d595b946fe4",
+  "source_extension_audit": "phase6.json",
+  "new_model_calls": 0,
+  "browser_scope": "Three isolated headless program tasks per rehearsal; model-reference suites reused, not rerun."
+}

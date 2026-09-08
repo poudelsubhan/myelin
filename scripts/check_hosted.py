@@ -30,6 +30,7 @@ async def main():
                 await asyncio.sleep(1)
         print(json.dumps(status), flush=True)
         assert status["status"] == "completed", status
+        return status["evidence"]
 
 
 if __name__ == "__main__":

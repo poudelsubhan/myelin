@@ -80,3 +80,17 @@ def test_native_validation_is_owned_by_server_job_and_event_bus(monkeypatch, tmp
             time.sleep(0.01)
         assert status["status"] == "completed" and status["evidence"]["fixture"]
         assert "compiler.analysis" in (tmp_path / run_id / "events.jsonl").read_text()
+
+
+def test_completed_run_history_survives_restart_without_restarting_jobs(monkeypatch, tmp_path):
+    import json
+
+    monkeypatch.setenv("MYELIN_RUNS_DIR", str(tmp_path))
+    folder = tmp_path / "saved-run"
+    folder.mkdir()
+    (folder / "status.json").write_text(
+        json.dumps({"status": "completed", "result": {"model_calls": 0}})
+    )
+    with TestClient(create_app()) as client:
+        assert client.get("/runs/saved-run").json()["result"]["model_calls"] == 0
+        assert client.get("/runs").json()[0]["run_id"] == "saved-run"

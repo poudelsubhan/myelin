@@ -1,33 +1,46 @@
 # Myelin
 
 **Give Myelin a task. Astra figures it out once; Myelin turns the successful run
-into a checked program that can execute again without model calls.**
+into a checked program that executes again without model calls.**
 
-If the app changes, Myelin reconciles any writes, returns to the relevant browser
-checkpoint, asks Astra for a local repair, and validates the new program before
-promotion. The saved program—not permanent model memory—is the reusable artifact.
+When an app changes, Myelin reconciles earlier writes, resumes at a browser
+checkpoint, asks Astra for a local repair, and validates the candidate before
+promotion. The reusable artifact is a typed program with source-linked evidence.
 
-The current working example creates and pays invoices in an **owned local CRM**.
-It is not a demonstrated connector to arbitrary live CRMs. The CRM makes correct
-amounts, duplicate writes, missing payments and controlled app changes independently
-checkable. A second owned expense SPA now exercises bearer authentication,
-typed branches and an independent expense oracle.
+[Watch the one-minute demo](docs/media/demo.mp4) ·
+[Build and gate evidence](docs/demo-evidence.md) · [Runbook](docs/runbook.md)
+
+## Supported workflows
+
+| Owned app | Task | Architecture |
+|---|---|---|
+| CRM | Create an invoice and mark it paid | Server-rendered forms, cookies, fresh CSRF |
+| Expenses | Create and submit an expense | JSON SPA, fresh bearer auth, response-derived IDs |
+
+These two integrations demonstrate the reusable recording/compiler/executor design.
+They do **not** establish compatibility with arbitrary online CRMs. A new service
+needs authentication/session integration, workflow scope and independent outcome
+checks. Only synthetic local data is used here.
 
 ## What works
 
-- Visible model-led browser execution with per-action frames and request provenance.
-- Model-authored typed programs combining browser actions with observed HTTP calls.
-- Fresh cookies, CSRF and response-derived entity URLs on each run.
-- Eight independent business checks, immutable candidates and a promotion ledger.
-- New-input execution with zero model calls, UI-move resilience, local field-contract
-  repair, and applied-write/lost-response reconciliation.
-- A live console showing source-linked steps, validation and measured usage.
+- Model-led browser execution records each action, frame, request and response usage.
+- Astra compiles observed traffic into typed HTTP operations with necessary UI steps.
+- Immutable programs pass independently authored business checks before promotion.
+- New inputs execute with zero model calls; field changes can trigger scoped repair.
+- Both apps have full gates with eight program and eight fresh model-reference runs.
+- Native async validation retains original call IDs while Astra analyzes dependencies.
+- Accepted WebSocket steering becomes `amount_cents > 50000`, with explicit provenance
+  and passing below/equal/above cases. Submission remains a single common suffix.
+- Hosted shell analyzes sanitized uploaded traces; staged patches pass a gate before
+  adoption. A real effective-reasoning-effort update has recorded API evidence.
+- The console shows source frames, program steps, branch coverage, ledger decisions
+  and measured costs. Completed history survives restart.
 
-The `core-demo` tag preserves two successful core rehearsals. A full CRM gate has
-also passed eight program and eight fresh AI reference runs, with native async
-validation and an accepted reasoning-effort update. Expense compilation, live steering-to-rule and hosted staged patching now pass their
-full comparison gates. Final full-demo rehearsals and submission artifacts remain in progress. Mock tests are never presented as live capability evidence.
-See [verified build status](docs/build-log/SUMMARY.md) and [run evidence](docs/demo-evidence.md).
+The `core-demo` tag preserves the Phase 4 milestone. Later integrations retain it.
+The final budget-conserving rehearsals reuse verified live model evidence and
+execute a small set of new tasks with zero model calls. They do not claim new
+model-reference runs. See [integration status](docs/build-log/SUMMARY.md).
 
 ## Run locally
 
@@ -39,43 +52,49 @@ cp .env.example .env
 uv run playwright install chromium
 ```
 
-Fill OPENAI_API_KEY and set MYELIN_LIVE=1 in `.env`. Leave OPENAI_BASE_URL blank
-for the official API; use a custom address only if your event supplies a gateway.
-Set MYELIN_DEMO_TOKEN to a random local value for the internal demo controller.
-Synthetic login credentials are separate from the model API key.
+Fill OPENAI_API_KEY and set MYELIN_LIVE=1 for model-powered learning/repair.
+OPENAI_BASE_URL may remain blank: it defaults to the official API address. Use a
+custom gateway only if your event supplies one. Set MYELIN_DEMO_TOKEN to a local
+random value. The other demo credentials are synthetic target-app logins.
 
-Start these in separate terminals:
+Start in separate terminals:
 
 ```sh
-make crm
-make expense
-make serve
+make crm       # target app on 8101
+make expense   # target app on 8102
+make serve     # Myelin console on 8100
 ```
 
-Open the console at http://localhost:8100. Then:
+Open http://localhost:8100. MYELIN_HEADLESS=1 avoids extra desktop windows while
+preserving captured frames. Choose “Learn” to create a program, then “Execute the
+current program” for new inputs. The expense full mode learns the explicit note
+rule and runs eight model comparisons.
 
 ```sh
 uv run pytest -q
 uv run ruff check .
-uv run python scripts/hello.py
 uv run python scripts/demo.py --assert --core
+uv run python scripts/demo.py --assert --full
 ```
 
-`--stage` pauses between demonstration beats. Core mode never claims full completion.
-Runs, screenshots, app databases, environment secrets and private planning files
-are ignored. The demo resets isolated tenants and preserves candidate/history
-artifacts. See the [runbook](docs/runbook.md) for recovery and replay rules.
+The fresh full command is model intensive. To reuse your already-verified live
+artifacts and run only three zero-model smoke tasks, pass `--reuse-evidence` as
+shown in the [runbook](docs/runbook.md). `--stage` pauses between engineering beats.
+Raw runs, screenshots, databases, environment files and private plans are ignored.
+The repository includes selected sanitized evidence and the completed video.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
   Task[Task + inputs] --> Astra[Astra browser reasoning]
-  Astra --> Trace[Actions + observations + traffic]
-  Trace --> Compiler[Astra compiler]
+  Steer[Explicit user rule] --> Astra
+  Astra --> Trace[Actions + frames + observed traffic]
+  Trace --> Compiler[Astra compiler + staged tools]
   Compiler --> Candidate[Immutable typed program]
   Candidate --> Gate[Fresh-case validation]
   Oracle[Independent business oracle] --> Gate
+  References[Fresh model references in full mode] --> Gate
   Gate --> Ledger[Promotion ledger]
   Ledger --> Executor[Deterministic HTTP + browser executor]
   Executor --> App[Owned application]
@@ -83,13 +102,14 @@ flowchart LR
   Repair --> Astra
 ```
 
-The model/program tool surface cannot access test-administration endpoints or app
-source/DB files. The independent oracle verifies a finite locked suite; it cannot
-prove arbitrary-task equivalence. Work units count HTTP requests plus ten times UI
-actions. They are not dollars. Model cost uses recorded response usage and dated
-pricing, with unknown values retained when evidence is insufficient.
+The model's tool surface cannot read target-app source/DB files or call private
+administration endpoints. The oracle checks finite locked inputs and invariants;
+it does not prove arbitrary-task equivalence. Work units count HTTP requests plus
+ten times UI actions. Model-token cost uses dated response usage; unknown cost
+stays unknown, and hosted/container charges are separate.
 
-[CRM contract](docs/crm-contract.md) · [Oracle specification](docs/oracle-spec.md) ·
-[API evidence](docs/api-capabilities.md)
+[API capability evidence](docs/api-capabilities.md) ·
+[Development fixes and tests](docs/development-evidence.md) ·
+[CRM contract](docs/crm-contract.md) · [Oracle specification](docs/oracle-spec.md)
 
-MIT license.
+MIT license. Submission artifacts are prepared; event submission is not automated.
