@@ -17,6 +17,11 @@ class Astra:
     def __init__(self, settings, store, emit):
         self.settings, self.store, self.emit = settings, store, emit
         self.usage = {}
+        previous = store.folder / "usage.jsonl"
+        if previous.exists():
+            for line in previous.read_text().splitlines():
+                row = UsageRecord.model_validate_json(line)
+                self.usage[row.response_id] = row
         self.limit = Decimal(os.getenv("MYELIN_MAX_MODEL_USD_PER_RUN", "10"))
         self.pricing = json.loads((ROOT / "policy/pricing.json").read_text())
 

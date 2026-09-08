@@ -16,8 +16,18 @@ from myelin.console.bus import EventBus
 from myelin.contracts import FeatureUnavailable, Services
 from myelin.gate.gate import GateRunner, suite
 from myelin.gate.ledger import CandidateStore, Ledger
+from myelin.metrics import aggregate
+from myelin.orchestration import Pipeline
 from myelin.program.executor import Executor
-from myelin.schema import Contract, EnvironmentSpec, GateRequest, GateResult, Program, RunResult
+from myelin.schema import (
+    Contract,
+    EnvironmentSpec,
+    GateRequest,
+    GateResult,
+    Program,
+    RunResult,
+    UsageRecord,
+)
 from myelin.trace.store import TraceStore
 from myelin.verification.admin import Admin
 from myelin.verification.oracle import verify
@@ -31,6 +41,7 @@ class RunRequest(Contract):
     environment: EnvironmentSpec
     policy_revision: str = "crm-policy-v1"
     program_hash: str | None = None
+    compile_after: bool = True
 
 
 class PromotionRequest(Contract):
@@ -130,6 +141,15 @@ def create_app(services: Services | None = None):
                     work_units=session.http_requests + 10 * session.ui_actions,
                 )
                 status["trace_id"] = run_id
+                if success and body.compile_after:
+                    program, gate, decision = await Pipeline(
+                        settings, candidates, ledger, gate_case, emit
+                    ).compile_and_promote(trace, store)
+                    status.update(candidate_hash=program.content_hash(), gate_id=gate.gate_id)
+                    if decision.verdict != "promoted":
+                        status["result"] = result.model_dump(mode="json")
+                        raise ValueError("compiled candidate was not promoted")
+
             else:
                 path = settings.runs_dir.parent / "programs" / body.workflow / body.program_hash
                 program = Program.model_validate_json((path / "program.json").read_text())
@@ -153,6 +173,22 @@ def create_app(services: Services | None = None):
         except Exception as exc:
             status.update(status="failed", error=type(exc).__name__)
         finally:
+            usage_path = store.folder / "usage.jsonl"
+            if usage_path.exists():
+                usage_rows = [
+                    UsageRecord.model_validate_json(line)
+                    for line in usage_path.read_text().splitlines()
+                ]
+                unique = {r.response_id: r for r in usage_rows}
+                status["metrics"] = {
+                    "by_purpose": aggregate(usage_rows),
+                    "total_model_calls": sum(r.model_calls for r in unique.values()),
+                    "total_model_usd": str(sum(Decimal(r.usd) for r in unique.values()))
+                    if all(r.usd is not None for r in unique.values())
+                    else None,
+                    "pipeline_wall_ms": int((time.monotonic() - started) * 1000),
+                }
+                store.save("metrics.json", status["metrics"])
             store.save("status.json", status)
             await emit("run.finished", status)
             if session:
