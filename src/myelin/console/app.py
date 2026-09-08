@@ -46,12 +46,20 @@ class RunRequest(Contract):
     program_hash: str | None = None
     compile_after: bool = True
     lost_response_step: str | None = None
+    steer_text: str | None = None
+    full_validation: bool = False
 
 
 class PromotionRequest(Contract):
     gate_id: str
     expected_parent_hash: str | None
     mode: Literal["initial", "optimization", "restoration", "policy_change"]
+
+
+class HostedBody(Contract):
+    workflow: Literal["crm.create_invoice", "expense.submit_expense"]
+    candidate_hash: str
+    full_validation: bool = True
 
 
 class GateBody(Contract):
@@ -67,6 +75,7 @@ def create_app(services: Services | None = None):
     bus = EventBus(settings.runs_dir)
     statuses, jobs, sessions = {}, set(), {}
     gates = {}
+    steerers = {}
     candidates = CandidateStore(settings.runs_dir.parent / "programs")
     ledger = Ledger(settings.runs_dir / "ledger", candidates)
 
@@ -91,6 +100,7 @@ def create_app(services: Services | None = None):
 
         session = None
         result = None
+        ws = None
         status = statuses[run_id]
         app_settings = settings.for_app(body.environment.app)
         admin = Admin(app_settings)
@@ -112,17 +122,23 @@ def create_app(services: Services | None = None):
             await session.open(body.environment, tenant)
             sessions[run_id] = session
             session.lose_response_step = body.lost_response_step
-            if body.mode == "record":
+            if body.mode in ("record", "full"):
+                if body.mode == "full":
+                    from myelin.astra.ws import WebSocketAstra
+
+                    ws = WebSocketAstra(app_settings, store, emit, session, body.steer_text)
+                    steerers[run_id] = ws
                 trace = await Recorder(app_settings, emit)(
                     body.workflow,
                     body.inputs,
                     body.environment,
                     session=session,
                     policy_revision=body.policy_revision,
+                    astra=ws,
                 )
                 after = await admin.state(tenant)
                 assertions = verify(
-                    body.workflow, before, after, body.inputs, {"revision": body.policy_revision}
+                    body.workflow, before, after, body.inputs, {"revision": trace.policy_revision}
                 )
                 success = trace.outcome == "awaiting_verification" and all(
                     a.passed for a in assertions
@@ -155,8 +171,8 @@ def create_app(services: Services | None = None):
                 status["trace_id"] = run_id
                 if success and body.compile_after:
                     program, gate, decision = await Pipeline(
-                        app_settings, candidates, ledger, gate_case, emit
-                    ).compile_and_promote(trace, store)
+                        app_settings, candidates, ledger, gate_case, emit, reference_case, outcome
+                    ).compile_and_promote(trace, store, full=body.mode == "full")
                     status.update(candidate_hash=program.content_hash(), gate_id=gate.gate_id)
                     if decision.verdict != "promoted":
                         status["result"] = result.model_dump(mode="json")
@@ -169,8 +185,17 @@ def create_app(services: Services | None = None):
                     raise ValueError("candidate hash mismatch")
                 if body.mode == "repair":
                     result, repaired, gate = await RepairLoop(
-                        app_settings, admin, candidates, ledger, gate_case, emit
-                    ).run(program, body.inputs, body.environment, session)
+                        app_settings,
+                        admin,
+                        candidates,
+                        ledger,
+                        gate_case,
+                        emit,
+                        reference_case,
+                        outcome,
+                    ).run(
+                        program, body.inputs, body.environment, session, full=body.full_validation
+                    )
                     if repaired:
                         status.update(candidate_hash=repaired.content_hash(), gate_id=gate.gate_id)
                 else:
@@ -217,6 +242,9 @@ def create_app(services: Services | None = None):
                 store.save("metrics.json", status["metrics"])
             store.save("status.json", status)
             await emit("run.finished", status)
+            if ws:
+                await ws.close()
+                steerers.pop(run_id, None)
             if session:
                 await session.close()
                 sessions.pop(run_id, None)
@@ -231,8 +259,8 @@ def create_app(services: Services | None = None):
 
     @app.post("/runs", status_code=202)
     async def start_run(body: RunRequest, request: Request):
-        if body.mode == "full":
-            raise HTTPException(501, "feature pending its integration gate")
+        if body.mode == "full" and body.environment.app != "expense":
+            raise HTTPException(501, "full recording currently uses the expense workflow")
         if body.mode in ("program", "repair") and (
             not body.program_hash or not re.fullmatch(r"[a-f0-9]{64}", body.program_hash)
         ):
@@ -267,6 +295,16 @@ def create_app(services: Services | None = None):
         jobs.add(job)
         job.add_done_callback(jobs.discard)
         return {"run_id": run_id}
+
+    @app.post("/runs/{run_id}/steer", status_code=202)
+    async def steer(run_id: str, request: Request):
+        if run_id not in steerers:
+            raise HTTPException(409, "run has no active steering connection")
+        body = await request.json()
+        try:
+            return await steerers[run_id].queue_steer(body["text"])
+        except (ValueError, KeyError) as exc:
+            raise HTTPException(422, str(exc)) from exc
 
     @app.get("/runs/{run_id}")
     async def get_run(run_id: str):
@@ -319,6 +357,39 @@ def create_app(services: Services | None = None):
             gates[gate_id] = result.model_dump(mode="json")
         except Exception as exc:
             gates[gate_id] = {"status": "failed", "error": type(exc).__name__}
+
+    @app.post("/compiler/hosted", status_code=202)
+    async def hosted(body: HostedBody):
+        from myelin.astra.hosted_compilation import hosted_compilation
+
+        run_id = str(uuid4())
+        statuses[run_id] = {"status": "running", "mode": "hosted_compilation"}
+
+        async def hosted_job():
+            try:
+                evidence = await hosted_compilation(
+                    settings,
+                    bus,
+                    candidates,
+                    ledger,
+                    body.workflow,
+                    body.candidate_hash,
+                    run_id,
+                    body.full_validation,
+                )
+                statuses[run_id].update(
+                    status="completed" if evidence["passed"] else "failed", evidence=evidence
+                )
+            except Exception as exc:
+                statuses[run_id].update(status="failed", error=type(exc).__name__)
+                await bus.emit(run_id, "run.finished", statuses[run_id])
+            finally:
+                TraceStore(settings.runs_dir, run_id).save("status.json", statuses[run_id])
+
+        job = asyncio.create_task(hosted_job())
+        jobs.add(job)
+        job.add_done_callback(jobs.discard)
+        return {"run_id": run_id}
 
     @app.post("/native-gates", status_code=202)
     async def native_gate(body: GateBody):
@@ -398,7 +469,14 @@ def create_app(services: Services | None = None):
             request.headers.get("X-Myelin-Demo-Token", ""), settings.demo_token
         ):
             raise HTTPException(403, "internal demo token required")
-        workflow = "crm.create_invoice"
+        body = (
+            await request.json()
+            if request.headers.get("content-type", "").startswith("application/json")
+            else {}
+        )
+        workflow = (body or {}).get("workflow", "crm.create_invoice")
+        if workflow not in ("crm.create_invoice", "expense.submit_expense"):
+            raise HTTPException(422, "unsupported workflow")
         async with ledger.locks[workflow]:
             path = ledger.root / f"{workflow}.current.json"
             if path.exists():

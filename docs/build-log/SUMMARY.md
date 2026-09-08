@@ -6,8 +6,10 @@
 - Phase 3: PASS — 45 tests/lint, live compilation, 8/8 gate, promotion, ninth-input zero-call run and source-linked console.
 - Phase 4: PASS — 53 tests/lint, live scoped repair, lost-response reconciliation, two independently audited clean core rehearsals.
 - Phase 5: PASS — 74 tests/lint, expense bearer/branch/mutation checks, full CRM 8+8 differential gate, live native async/effort update, and two core regressions.
-- Phases 6–7: retained extension scope, pending integration gates.
+- Phase 6: PASS — 86 tests/lint, live expense compilation/steering, hosted analysis/patch, both full repair gates, independent E1–E5 audit and core regression.
+- Phase 7: final integration/rehearsals and artifacts in progress.
 - Core C1–C8: PASS — demo-3bb22721-777a-4484-a0ed-4fba67fe6a55 and demo-4f8b5c0d-419d-4648-94e1-4a4a2dcbeafc.
-- E2/E3: PASS; E1 has an expense execution fixture; E5 has effort-update evidence. E1/E4/E5/E6 completion remains pending.
+- E1–E5: PASS; E6 final packaging/rehearsals pending.
+- Phase 6 core regression: demo-7424fc04-3224-40a1-ac56-5d595b946fe4 passed C1–C8 with independent artifact audit.
 
 See [0A](0A.md) for evidence. No core run is labelled full completion.

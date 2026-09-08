@@ -82,6 +82,7 @@ class Recorder:
             "Use exact accessible labels from the observation. "
             "Credentials are available only via secret refs email,password,tenant. "
             "You may use declared input refs. Never invent credentials. "
+            "Copy every requested field exactly, including category; prefer input refs. "
             "Click/submit takes a button/link locator; submit means click that button. "
             "Only the permitted app origin is available. Never access test admin routes. "
             "After each batch inspect the resulting observation. When the goal is complete, "
@@ -97,7 +98,8 @@ class Recorder:
                 else " Leave the manager note empty."
             )
         prompt = {
-            "goal": remaining_goal or goal,
+            "goal": goal,
+            "continuation": remaining_goal,
             "workflow": workflow,
             "inputs": inputs,
             "app_url": self.settings.crm_url,
@@ -122,7 +124,14 @@ class Recorder:
                         purpose or ("repair" if checkpoint else "record"), **kwargs
                     )
                     previous = response.id
-                    trace.usage_response_ids.append(response.id)
+                    trace.usage_response_ids = (
+                        list(astra.usage)
+                        if hasattr(astra, "usage")
+                        else trace.usage_response_ids + [response.id]
+                    )
+                    if getattr(astra, "marks", None):
+                        trace.steer_marks = list(astra.marks)
+                        trace.policy_revision = astra.marks[-1].policy_revision
                     calls = [item for item in response.output if item.type == "function_call"]
                     if not calls:
                         if response.status != "completed":
@@ -204,6 +213,10 @@ class Recorder:
             raise
         finally:
             store.save("trace.json", trace)
+            if getattr(astra, "marks", None):
+                trace.steer_marks = list(astra.marks)
+                trace.policy_revision = astra.marks[-1].policy_revision
+                store.save("trace.json", trace)
             session.trace = trace
             session.model_usage = list(astra.usage.values())
         return trace

@@ -61,12 +61,7 @@ class Astra:
                     effective = item["reasoning"]["effort"]
                     updates.append(item)
 
-        if not self.settings.live or not self.settings.api_key:
-            raise FeatureUnavailable("Set OPENAI_API_KEY and MYELIN_LIVE=1 for live calls")
-        if self.usd is None or self.usd >= self.limit:
-            raise BudgetExceeded("model dollar ceiling reached or pricing unavailable")
-        if len(self.usage) >= int(os.getenv("MYELIN_MAX_MODEL_TURNS", "20")):
-            raise BudgetExceeded("model turn ceiling reached")
+        self.check_budget()
         async with AsyncOpenAI(
             api_key=self.settings.api_key,
             base_url=self.settings.base_url,
@@ -108,6 +103,17 @@ class Astra:
                 "updates": updates,
             },
         )
+        return await self.account(response, purpose)
+
+    def check_budget(self):
+        if not self.settings.live or not self.settings.api_key:
+            raise FeatureUnavailable("Set OPENAI_API_KEY and MYELIN_LIVE=1 for live calls")
+        if self.usd is None or self.usd >= self.limit:
+            raise BudgetExceeded("model dollar ceiling reached or pricing unavailable")
+        if len(self.usage) >= int(os.getenv("MYELIN_MAX_MODEL_TURNS", "20")):
+            raise BudgetExceeded("model turn ceiling reached")
+
+    async def account(self, response, purpose):
         if response.id not in self.usage:
             u = response.usage
             usd = None

@@ -53,6 +53,10 @@ def bind_field(key, value, inputs):
 
 
 def lift(trace, inputs, network):
+    if trace.environment.app == "expense":
+        from myelin.program.expense_lifter import lift as expense_lift
+
+        return expense_lift(trace, inputs, network)
     candidates = []
     actions = {a.id: a for a in trace.actions}
     reads = []

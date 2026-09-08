@@ -12,7 +12,9 @@ async def reconcile(session, failure):
         str(uuid4()),
         "GET",
         session.settings.crm_url + "/api/operations/" + quote(op, safe=""),
-        {},
+        {"Authorization": session.secrets["bearer_token"]}
+        if session.environment.app == "expense" and "bearer_token" in session.secrets
+        else {},
         None,
     )
     if response["status"] != 200:

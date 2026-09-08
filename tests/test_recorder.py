@@ -78,3 +78,31 @@ async def test_scripted_model_preserves_each_action_and_requires_oracle(monkeypa
     assert all(a.before_id != a.after_id for a in trace.actions)
     assert calls[1]["previous_response_id"] == "response-1"
     assert session.closed is False
+
+
+async def test_repair_retains_original_policy_and_inputs(tmp_path):
+    captured = []
+
+    class Model:
+        usage = {}
+
+        async def respond(self, purpose, **kwargs):
+            captured.append(json.loads(kwargs["input"][0]["content"]))
+            return SimpleNamespace(id="repair-response", status="completed", output=[])
+
+    async def emit(*args):
+        pass
+
+    await Recorder(SimpleNamespace(timeout_s=10, crm_url="http://localhost:8102"), emit)(
+        "expense.submit_expense",
+        {"category": "Supplies", "amount_cents": 50001},
+        EnvironmentSpec(app="expense", revision="expense-v1"),
+        RecordingSession(tmp_path),
+        remaining_goal="Continue from the changed form without repeating login.",
+        policy_revision="expense-policy-manager-v2",
+        astra=Model(),
+    )
+    assert "approved by demo" in captured[0]["goal"]
+    assert "50000" in captured[0]["goal"]
+    assert captured[0]["inputs"]["category"] == "Supplies"
+    assert "without repeating login" in captured[0]["continuation"]

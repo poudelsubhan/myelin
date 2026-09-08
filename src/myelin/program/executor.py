@@ -99,6 +99,7 @@ class Executor:
                 if any(dep not in completed for dep in step.depends_on):
                     raise StepFailure("precondition", "dependencies completed", completed)
                 session.action_id = step.id
+                network_offset = len(session.network) if hasattr(session, "network") else 0
                 if isinstance(step, Branch):
                     decision = evaluate(step.condition, context, observations)
                     row = {
@@ -159,24 +160,35 @@ class Executor:
                         else:
                             context.variables[rule.target_var] = value
                 else:
+                    args = {
+                        k: resolve(v, inputs, context.variables, context.secret_store)
+                        for k, v in step.arguments.items()
+                    }
+                    if step.action == "navigate":
+                        args["url"] = urljoin(session.settings.crm_url, args["url"])
                     if last_kind == "http":
-                        if not checkpoint.resume_url:
+                        resume_url = (
+                            args.get("url") if step.action == "navigate" else checkpoint.resume_url
+                        )
+                        if not resume_url:
                             raise StepFailure(
                                 "precondition", "declared HTTP-to-UI resume URL", None
                             )
                         if environment.app == "expense":
                             from myelin.adapters.expense import resume
 
-                            await resume(session, checkpoint.resume_url)
-                        await session.perform(
-                            step.id + ":resume", "navigate", None, {"url": checkpoint.resume_url}
-                        )
-                    args = {
-                        k: resolve(v, inputs, context.variables, context.secret_store)
-                        for k, v in step.arguments.items()
-                    }
+                            await resume(session, resume_url)
+                        if step.action != "navigate":
+                            await session.perform(
+                                step.id + ":resume", "navigate", None, {"url": resume_url}
+                            )
                     sent = True
                     await session.perform(step.id, step.action, step.target, args, op)
+                    if hasattr(session, "network"):
+                        sent = any(
+                            e.method not in ("GET", "HEAD", "OPTIONS")
+                            for e in session.network[network_offset:]
+                        )
                 raw = await session.snapshot()
                 obs = session.store.observation(raw, step.id)
                 context.variables["current_url"] = raw.url

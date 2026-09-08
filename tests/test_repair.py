@@ -35,6 +35,8 @@ def failure(effect="unknown"):
 async def test_reconciliation_never_retries_unknown_effects(status, expected):
     class Fake:
         settings = SimpleNamespace(crm_url="http://localhost:8101")
+        environment = SimpleNamespace(app="crm")
+        secrets = {}
 
         async def request(self, *args):
             assert args[1] == "GET" and args[2].endswith("/api/operations/r%3Awrite")
@@ -66,3 +68,23 @@ def test_presentation_compatibility_does_not_mask_contract_changes():
     assert not compatible(
         program, EnvironmentSpec(app="crm", revision=revision(contract), mutations=contract)
     )
+
+
+async def test_expense_reconciliation_uses_this_runs_bearer():
+    class Expense:
+        settings = SimpleNamespace(crm_url="http://localhost:8102")
+        environment = SimpleNamespace(app="expense")
+        secrets = {"bearer_token": "fresh-test-token"}
+
+        async def request(self, request_id, method, url, headers, body):
+            assert method == "GET" and headers == {"Authorization": "fresh-test-token"}
+            return {
+                "status": 200,
+                "body": {
+                    "status": "applied",
+                    "result": {"id": "expense"},
+                    "request_hash": "fixture",
+                },
+            }
+
+    assert (await reconcile(Expense(), failure()))["result"] == {"id": "expense"}

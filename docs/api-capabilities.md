@@ -25,7 +25,7 @@ OPENAI_BASE_URL environment variable. Explicit official fallback fixed the bug;
 is retained privately, not counted as a successful model response.
 
 Function calling, native async and effort updates are now live-verified below.
-WebSocket steering, hosted shell and apply_patch remain required later gates.
+WebSocket steering, hosted shell and apply_patch are also live-verified in Phase 6 below.
 
 ## Core live integrations
 
@@ -58,3 +58,18 @@ these adapters. Successful live probe:
 
 The earlier full gate failed three reference calls with API server errors. It is
 retained as a failed gate; the successful probe used a fresh complete suite.
+
+## WebSocket steering and hosted compiler tools
+
+Phase 6 live proof is exported in [phase6.json](evidence/phase6.json).
+WebSocket run `dbceeebf-2466-43d4-8959-7e995b58d53e` received server-accepted
+steering, continued execution, and compiled the exact explicit threshold into a
+source-linked branch. Eight fresh model/program pairs matched, including equality.
+Disconnect recovery has controlled-transport tests; the live proof does not claim
+a deliberately induced network outage.
+
+Hosted run `f7f20c09-8715-4a44-b3c2-011085c35277` uploaded sanitized JSON,
+received actual shell outputs on two responses using the same container, applied
+one staged notes patch, and passed its full gate before promotion. Hosted work
+was executed by the service. The local interpreter applied the requested candidate
+diff only; it did not re-execute hosted shell commands.

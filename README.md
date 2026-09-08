@@ -25,8 +25,8 @@ typed branches and an independent expense oracle.
 
 The `core-demo` tag preserves two successful core rehearsals. A full CRM gate has
 also passed eight program and eight fresh AI reference runs, with native async
-validation and an accepted reasoning-effort update. Full completion still requires
-expense model compilation, live steering, hosted compiler tools and final artifacts. Mock tests are never presented as live capability evidence.
+validation and an accepted reasoning-effort update. Expense compilation, live steering-to-rule and hosted staged patching now pass their
+full comparison gates. Final full-demo rehearsals and submission artifacts remain in progress. Mock tests are never presented as live capability evidence.
 See [verified build status](docs/build-log/SUMMARY.md) and [run evidence](docs/demo-evidence.md).
 
 ## Run locally

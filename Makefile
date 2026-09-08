@@ -2,9 +2,9 @@
 crm:
 	uv run uvicorn apps.crm.app:create_app --factory --host 127.0.0.1 --port 8101 --no-access-log
 expense:
-	uv run uvicorn apps.expense.app:create_app --factory --host 127.0.0.1 --port 8102
+	uv run uvicorn apps.expense.app:create_app --factory --host 127.0.0.1 --port 8102 --no-access-log
 serve:
-	uv run uvicorn myelin.console.app:create_app --factory --host 127.0.0.1 --port 8100
+	uv run uvicorn myelin.console.app:create_app --factory --host 127.0.0.1 --port 8100 --no-access-log
 test:
 	uv run pytest -q
 lint:

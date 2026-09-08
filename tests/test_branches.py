@@ -124,3 +124,59 @@ def test_nested_branch_ids_and_dataflow():
     nested.then[0].id = "single-common-suffix"
     with pytest.raises(ValueError, match="duplicate step"):
         Program.model_validate(p.model_dump())
+
+
+async def test_explicit_response_bound_navigation_resumes_http_once(tmp_path, monkeypatch):
+    program = branch_program()
+    ui = program.steps[-1]
+    ui.arguments = {"url": NamedRef(kind="variable", key="location")}
+    http = HttpStep(
+        id="read",
+        intent="Get fresh entity location",
+        source_action_ids=["fixture"],
+        pre=ui.pre,
+        post=ui.post,
+        effect="read",
+        method="GET",
+        url=LiteralRef(value="/read"),
+        body_kind="none",
+        extract=[{"target_var": "location", "source": "header", "expression": "location"}],
+    )
+    program.steps = [http, ui]
+    calls = []
+
+    class Session:
+        variables = {}
+        secrets = {}
+        run_id = "navigate-resume"
+        tenant = "fixture"
+        http_requests = 1
+        ui_actions = 0
+        settings = SimpleNamespace(crm_url="http://localhost:8101")
+        page = SimpleNamespace(url="about:blank")
+        store = TraceStore(tmp_path, "navigate-resume")
+
+        async def snapshot(self):
+            return RawObservation(self.page.url, b"fixture", "heading: Fixture")
+
+        async def request(self, *args, **kwargs):
+            return {"status": 200, "headers": {"location": "/invoices/fresh"}, "body": {}}
+
+        async def perform(self, sid, action, target, args, op=None):
+            calls.append((sid, args["url"]))
+            self.page.url = args["url"]
+            self.ui_actions += 1
+
+    class Admin:
+        async def state(self, tenant):
+            return {}
+
+    async def emit(*args):
+        pass
+
+    monkeypatch.setattr("myelin.program.executor.verify", lambda *args: [])
+    result = await Executor(Admin(), emit)(
+        program, {"amount_cents": 50001}, EnvironmentSpec(app="crm", revision="crm-v1"), Session()
+    )
+    assert result.success and result.model_calls == 0
+    assert calls == [("single-common-suffix", "http://localhost:8101/invoices/fresh")]

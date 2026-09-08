@@ -1,0 +1,932 @@
+{
+  "expense": {
+    "run_id": "phase6-expense-21255526-2824-4a54-af06-43f1e624832d",
+    "passed": true,
+    "baseline_hash": "9b61bb97d070a871c248de179cd8bc033521d48db764c2893552e7a233bb74b1",
+    "steered_hash": "7451e298e1f2b9254c124fe969067b028c12292040b21aba39c2d6c2fef325b3",
+    "gate_id": "52d0ac9b-5271-4a76-bc63-a0875816b662"
+  },
+  "native": {
+    "run_id": "50cf2b09-9330-477b-beca-474b4148b629",
+    "candidate_hash": "6f83a7afde1d4e02b2e67826242f22557bcc9d986cafb420520724310fd04187",
+    "gate_id": "10f6f947-fa71-42ae-a623-c86c6097f08a",
+    "native_call_id": "call_ms5LFz1bYazDPln30OypywMg",
+    "response_ids": [
+      "resp_0050d319d9b38b64006aa073113fdc87d0aef63e0e28ec55bd",
+      "resp_0050d319d9b38b64006aa073168b7487d0a7ad19ba16e7671e",
+      "resp_0050d319d9b38b64006aa073c82b5c87d0b2f1a93447a04c2c"
+    ],
+    "terminal_deliveries": 1,
+    "pending_during_analysis": true,
+    "oracle_passes": 8,
+    "reference_passes": 8,
+    "reference_total": 8,
+    "all_references_complete": true,
+    "effort_update_accepted": true,
+    "status": "passed"
+  },
+  "hosted": {
+    "run_id": "f7f20c09-8715-4a44-b3c2-011085c35277",
+    "source_hash": "b4484c087fb42c828e9919d858f48faa82362849690a202cc23c30f55342fa9e",
+    "candidate_hash": "33e5eaa3e201afbe554c28812696a56323669246cf14b8d87a6b4206346d6b4a",
+    "container_id": "cntr_6aa07884a6348198adf3683a74d871a204ad8a22b5a52fe9",
+    "hosted_response_ids": [
+      "resp_06012e800f92b03b006aa07885dfc887d0be0ddfbfbeef7282",
+      "resp_06012e800f92b03b006aa078f3d99087d08862bbfa506a7cdc"
+    ],
+    "patch_calls": [
+      {
+        "type": "apply_patch_call_output",
+        "call_id": "call_m9PvXNGQqvwRYz1maztDXOwL",
+        "status": "completed",
+        "output": "update_file program.json; candidate validation still required"
+      }
+    ],
+    "gate_id": "da181aa7-d193-4666-9aee-b7fb7a8e196e",
+    "baseline_gate_id": "be26385c-dbc4-4c7f-8373-c961c38477e6",
+    "oracle_passes": 8,
+    "reference_passes": 8,
+    "decision": {
+      "candidate_hash": "33e5eaa3e201afbe554c28812696a56323669246cf14b8d87a6b4206346d6b4a",
+      "parent_hash": "b4484c087fb42c828e9919d858f48faa82362849690a202cc23c30f55342fa9e",
+      "version": 3,
+      "environment_revision": "crm-v1-253a8daac590",
+      "policy_revision": "crm-policy-v1",
+      "suite_hash": "7864fe96723a859a1420d735869beb00fb6a0ad44bad22cd595cc0b78dac86e0",
+      "gate_id": "da181aa7-d193-4666-9aee-b7fb7a8e196e",
+      "mode": "optimization",
+      "verdict": "promoted",
+      "metrics_before": {
+        "candidate_hash": "b4484c087fb42c828e9919d858f48faa82362849690a202cc23c30f55342fa9e",
+        "parent_hash": "3d306b8e1953eac78189dcc12a2022fe62f70f891766ee17c01ac484cabd6915",
+        "version": 2,
+        "environment_revision": "crm-v1-253a8daac590",
+        "policy_revision": "crm-policy-v1",
+        "suite_hash": "7864fe96723a859a1420d735869beb00fb6a0ad44bad22cd595cc0b78dac86e0",
+        "gate_id": "85a4e51c-6f58-4fd9-90b3-c4a4f90272a0",
+        "mode": "restoration",
+        "verdict": "promoted",
+        "metrics_before": {
+          "candidate_hash": "3d306b8e1953eac78189dcc12a2022fe62f70f891766ee17c01ac484cabd6915",
+          "parent_hash": null,
+          "version": 1,
+          "environment_revision": "crm-v1",
+          "policy_revision": "crm-policy-v1",
+          "suite_hash": "7864fe96723a859a1420d735869beb00fb6a0ad44bad22cd595cc0b78dac86e0",
+          "gate_id": "5483d78e-132f-4b90-879f-f942b46ae5e6",
+          "mode": "initial",
+          "verdict": "promoted",
+          "metrics_before": null,
+          "metrics_after": {
+            "max_work_units": 68,
+            "oracle_passes": 8,
+            "oracle_total": 8
+          },
+          "rule": "correctness",
+          "reason": "All required cases passed",
+          "timestamp": 1788899806.512981
+        },
+        "metrics_after": {
+          "max_work_units": 68,
+          "oracle_passes": 8,
+          "oracle_total": 8
+        },
+        "rule": "correctness",
+        "reason": "All required cases passed",
+        "timestamp": 1788899893.723915
+      },
+      "metrics_after": {
+        "max_work_units": 68,
+        "oracle_passes": 8,
+        "oracle_total": 8
+      },
+      "rule": "correctness",
+      "reason": "All required cases passed",
+      "timestamp": 1788902000.117242
+    },
+    "behavior_preserved": true,
+    "passed": true
+  },
+  "negatives": {
+    "run_id": "phase6-rule-rejections-3a231290-e175-4503-adf2-3416510bacdf",
+    "cases": {
+      "wrong_comparator": {
+        "gate_id": "0b000c14-63b3-4c9b-896b-6dc613d3af8c",
+        "candidate_hash": "0cdf53b0ad55e444b13d003e3e556eded547e721718e14f454f1894cac9a8a3f",
+        "decision": {
+          "candidate_hash": "0cdf53b0ad55e444b13d003e3e556eded547e721718e14f454f1894cac9a8a3f",
+          "parent_hash": "a5666231ea156c45da4fc2fd62cfcad56d325803535b5414ad528b9164d08fd1",
+          "version": 4,
+          "environment_revision": "expense-v1-5a49e4b2189f",
+          "policy_revision": "expense-policy-manager-v2",
+          "suite_hash": "81d8de80865fcc22cfc0924e41c130881ff6be6ce8ee86e1c0bce9870fca95f7",
+          "gate_id": "0b000c14-63b3-4c9b-896b-6dc613d3af8c",
+          "mode": "optimization",
+          "verdict": "rejected",
+          "metrics_before": {
+            "candidate_hash": "a5666231ea156c45da4fc2fd62cfcad56d325803535b5414ad528b9164d08fd1",
+            "parent_hash": "7451e298e1f2b9254c124fe969067b028c12292040b21aba39c2d6c2fef325b3",
+            "version": 3,
+            "environment_revision": "expense-v1-5a49e4b2189f",
+            "policy_revision": "expense-policy-manager-v2",
+            "suite_hash": "81d8de80865fcc22cfc0924e41c130881ff6be6ce8ee86e1c0bce9870fca95f7",
+            "gate_id": "f6ebd8f0-eaf2-4e34-94bd-893dd7ef71dc",
+            "mode": "restoration",
+            "verdict": "promoted",
+            "metrics_before": {
+              "candidate_hash": "7451e298e1f2b9254c124fe969067b028c12292040b21aba39c2d6c2fef325b3",
+              "parent_hash": "9b61bb97d070a871c248de179cd8bc033521d48db764c2893552e7a233bb74b1",
+              "version": 2,
+              "environment_revision": "expense-v1",
+              "policy_revision": "expense-policy-manager-v2",
+              "suite_hash": "81d8de80865fcc22cfc0924e41c130881ff6be6ce8ee86e1c0bce9870fca95f7",
+              "gate_id": "52d0ac9b-5271-4a76-bc63-a0875816b662",
+              "mode": "policy_change",
+              "verdict": "promoted",
+              "metrics_before": {
+                "candidate_hash": "9b61bb97d070a871c248de179cd8bc033521d48db764c2893552e7a233bb74b1",
+                "parent_hash": null,
+                "version": 1,
+                "environment_revision": "expense-v1",
+                "policy_revision": "expense-policy-v1",
+                "suite_hash": "75b7d73c7716a85e6811fdf33bc787b6cd7aae8a59a5e58183e5f1ea3364f11e",
+                "gate_id": "f8ebf9ba-ccd9-4b4b-b16d-3462289485ec",
+                "mode": "initial",
+                "verdict": "promoted",
+                "metrics_before": null,
+                "metrics_after": {
+                  "max_work_units": 3,
+                  "oracle_passes": 8,
+                  "oracle_total": 8
+                },
+                "rule": "correctness",
+                "reason": "All required cases passed",
+                "timestamp": 1788900991.453367
+              },
+              "metrics_after": {
+                "max_work_units": 46,
+                "oracle_passes": 8,
+                "oracle_total": 8
+              },
+              "rule": "correctness",
+              "reason": "All required cases passed",
+              "timestamp": 1788901316.751025
+            },
+            "metrics_after": {
+              "max_work_units": 46,
+              "oracle_passes": 8,
+              "oracle_total": 8
+            },
+            "rule": "correctness",
+            "reason": "All required cases passed",
+            "timestamp": 1788902450.75177
+          },
+          "metrics_after": {
+            "max_work_units": 46,
+            "oracle_passes": 7,
+            "oracle_total": 8
+          },
+          "rule": "correctness",
+          "reason": "Missing or failed required case/reference",
+          "timestamp": 1788902534.570275
+        }
+      },
+      "duplicate_submit": {
+        "gate_id": "d403b943-f840-45f6-998c-0c149ff3088e",
+        "candidate_hash": "ef93b49cbb9f6c9c156ae25fcd32aca226f238f57d355d5c4b824169f075c9ef",
+        "decision": {
+          "candidate_hash": "ef93b49cbb9f6c9c156ae25fcd32aca226f238f57d355d5c4b824169f075c9ef",
+          "parent_hash": "a5666231ea156c45da4fc2fd62cfcad56d325803535b5414ad528b9164d08fd1",
+          "version": 4,
+          "environment_revision": "expense-v1-5a49e4b2189f",
+          "policy_revision": "expense-policy-manager-v2",
+          "suite_hash": "81d8de80865fcc22cfc0924e41c130881ff6be6ce8ee86e1c0bce9870fca95f7",
+          "gate_id": "d403b943-f840-45f6-998c-0c149ff3088e",
+          "mode": "optimization",
+          "verdict": "rejected",
+          "metrics_before": {
+            "candidate_hash": "a5666231ea156c45da4fc2fd62cfcad56d325803535b5414ad528b9164d08fd1",
+            "parent_hash": "7451e298e1f2b9254c124fe969067b028c12292040b21aba39c2d6c2fef325b3",
+            "version": 3,
+            "environment_revision": "expense-v1-5a49e4b2189f",
+            "policy_revision": "expense-policy-manager-v2",
+            "suite_hash": "81d8de80865fcc22cfc0924e41c130881ff6be6ce8ee86e1c0bce9870fca95f7",
+            "gate_id": "f6ebd8f0-eaf2-4e34-94bd-893dd7ef71dc",
+            "mode": "restoration",
+            "verdict": "promoted",
+            "metrics_before": {
+              "candidate_hash": "7451e298e1f2b9254c124fe969067b028c12292040b21aba39c2d6c2fef325b3",
+              "parent_hash": "9b61bb97d070a871c248de179cd8bc033521d48db764c2893552e7a233bb74b1",
+              "version": 2,
+              "environment_revision": "expense-v1",
+              "policy_revision": "expense-policy-manager-v2",
+              "suite_hash": "81d8de80865fcc22cfc0924e41c130881ff6be6ce8ee86e1c0bce9870fca95f7",
+              "gate_id": "52d0ac9b-5271-4a76-bc63-a0875816b662",
+              "mode": "policy_change",
+              "verdict": "promoted",
+              "metrics_before": {
+                "candidate_hash": "9b61bb97d070a871c248de179cd8bc033521d48db764c2893552e7a233bb74b1",
+                "parent_hash": null,
+                "version": 1,
+                "environment_revision": "expense-v1",
+                "policy_revision": "expense-policy-v1",
+                "suite_hash": "75b7d73c7716a85e6811fdf33bc787b6cd7aae8a59a5e58183e5f1ea3364f11e",
+                "gate_id": "f8ebf9ba-ccd9-4b4b-b16d-3462289485ec",
+                "mode": "initial",
+                "verdict": "promoted",
+                "metrics_before": null,
+                "metrics_after": {
+                  "max_work_units": 3,
+                  "oracle_passes": 8,
+                  "oracle_total": 8
+                },
+                "rule": "correctness",
+                "reason": "All required cases passed",
+                "timestamp": 1788900991.453367
+              },
+              "metrics_after": {
+                "max_work_units": 46,
+                "oracle_passes": 8,
+                "oracle_total": 8
+              },
+              "rule": "correctness",
+              "reason": "All required cases passed",
+              "timestamp": 1788901316.751025
+            },
+            "metrics_after": {
+              "max_work_units": 46,
+              "oracle_passes": 8,
+              "oracle_total": 8
+            },
+            "rule": "correctness",
+            "reason": "All required cases passed",
+            "timestamp": 1788902450.75177
+          },
+          "metrics_after": {
+            "max_work_units": 56,
+            "oracle_passes": 0,
+            "oracle_total": 8
+          },
+          "rule": "correctness",
+          "reason": "Missing or failed required case/reference",
+          "timestamp": 1788902602.644715
+        }
+      }
+    },
+    "passed": true
+  },
+  "repairs": {
+    "expense": {
+      "run_id": "phase6-repair-expense-50ce8229-f5dc-4deb-9968-4ba6866be0e0",
+      "app": "expense",
+      "repair_run_id": "f335b3f7-26b1-4d73-8e83-6c0415fe325c",
+      "original_hash": "7451e298e1f2b9254c124fe969067b028c12292040b21aba39c2d6c2fef325b3",
+      "passed": true,
+      "replay_run_id": "f8e339bc-ffb7-4a3a-8c9b-00243ae42828",
+      "candidate_hash": "a5666231ea156c45da4fc2fd62cfcad56d325803535b5414ad528b9164d08fd1",
+      "gate_id": "f6ebd8f0-eaf2-4e34-94bd-893dd7ef71dc"
+    },
+    "crm": {
+      "run_id": "phase6-repair-crm-89fe6bf3-68b2-4f29-8c8f-5cc69be73798",
+      "app": "crm",
+      "baseline_gate": "4f489616-f7e5-4a4b-8aa3-5e0ff03b5661",
+      "repair_run_id": "cc1cc8d9-8041-45fe-b517-1cdb0ed5fce0",
+      "original_hash": "ac359fcdd402c038f4e897d4cc65196215db4491af7bc9eb823e278963269e00",
+      "passed": true,
+      "replay_run_id": "822905c2-0f85-4e99-b240-b4fd7a5b0a66",
+      "candidate_hash": "5b4fd2134fdd039f0927d4219b3be4cbd0275a2a5f673fd715512880b36cb9c3",
+      "gate_id": "74ab8db8-9bcf-475d-8e9d-52967e1f6367"
+    }
+  },
+  "audit": {
+    "passed": true,
+    "criteria": {
+      "E1": true,
+      "E2": true,
+      "E3": true,
+      "E4": true,
+      "E5": true
+    },
+    "steer_id": "steer_d9a8e16f2e4443919589fd4a9d30b5e9",
+    "predicate": {
+      "kind": "compare",
+      "source": "input",
+      "path": "amount_cents",
+      "op": "gt",
+      "expected": {
+        "kind": "literal",
+        "value": 50000
+      }
+    },
+    "coverage": {
+      "true": [
+        "expense-3",
+        "expense-6",
+        "expense-7"
+      ],
+      "false": [
+        "expense-1",
+        "expense-2",
+        "expense-4",
+        "expense-5",
+        "expense-8"
+      ],
+      "boundary": [
+        "expense-2"
+      ]
+    },
+    "gates": {
+      "52d0ac9b-5271-4a76-bc63-a0875816b662": {
+        "candidate_hash": "7451e298e1f2b9254c124fe969067b028c12292040b21aba39c2d6c2fef325b3",
+        "paired_cases": [
+          {
+            "case_id": "expense-1",
+            "program_run_id": "42e623db-5e8b-42b6-b2c5-b9893d0877ed",
+            "reference_run_id": "5de3b97f-09f1-4b82-a31f-df8ae6cfbe39",
+            "reference_response_ids": [
+              "resp_09ffcc8193d1a8d5006aa076e9db6087d0a3edc26846fc8ef8",
+              "resp_09ffcc8193d1a8d5006aa076ed305487d0a1a4a693775379d1",
+              "resp_09ffcc8193d1a8d5006aa076f23c0487d099f4e63e63911bb2",
+              "resp_09ffcc8193d1a8d5006aa076f5eb2087d0b32d74feaa245cf0",
+              "resp_09ffcc8193d1a8d5006aa0770aaf8887d0b89c8ef367710d61",
+              "resp_09ffcc8193d1a8d5006aa0770f478887d0bf18ae913bc2bc6e",
+              "resp_09ffcc8193d1a8d5006aa07712cfd887d093d9144aa50712ab"
+            ]
+          },
+          {
+            "case_id": "expense-2",
+            "program_run_id": "8e24813d-76f3-49b2-aa2e-ec772f45ea74",
+            "reference_run_id": "1444cc3a-8144-4a19-a163-b1eef10c40d8",
+            "reference_response_ids": [
+              "resp_0d22f2b5d0550e94006aa076e9ec1887d0b3cdba39cccab261",
+              "resp_0d22f2b5d0550e94006aa076ed9ea087d0a0b16cf841f580a0",
+              "resp_0d22f2b5d0550e94006aa076f516c087d0aa79791142932538",
+              "resp_0d22f2b5d0550e94006aa076f930f087d0be4c6e5b011ca1d3",
+              "resp_0d22f2b5d0550e94006aa0770f6bcc87d0978e6ad157cefe0c",
+              "resp_0d22f2b5d0550e94006aa07715b2f487d0968d2ed40cb50e97",
+              "resp_0d22f2b5d0550e94006aa0771b38cc87d0b56294aac55e8535",
+              "resp_0d22f2b5d0550e94006aa0771fbcf487d083aa9f360bacd218"
+            ]
+          },
+          {
+            "case_id": "expense-3",
+            "program_run_id": "d5a89b78-4001-4c6d-a5cf-971ad846a001",
+            "reference_run_id": "a9889a89-ee42-4dae-b2d9-030be04f6fe5",
+            "reference_response_ids": [
+              "resp_0788e90dc193c3b9006aa0771b6fb087d0853029b32d7a49e3",
+              "resp_0788e90dc193c3b9006aa0771e160087d09bef418a8b87ee23",
+              "resp_0788e90dc193c3b9006aa0772261e087d0b747641cd75b62b4",
+              "resp_0788e90dc193c3b9006aa07725506887d0996d191e90987a5b",
+              "resp_0788e90dc193c3b9006aa0773e1a6c87d0910f0617acfa53e2",
+              "resp_0788e90dc193c3b9006aa0774353f887d0b2c3c0d1112d4f53",
+              "resp_0788e90dc193c3b9006aa07747ae1887d0949558645e2a69d6",
+              "resp_0788e90dc193c3b9006aa0774c31c487d09977c69a6bb8a827"
+            ]
+          },
+          {
+            "case_id": "expense-4",
+            "program_run_id": "7669eabf-1104-4f31-b56b-dac36aa0c2a1",
+            "reference_run_id": "6022bc15-fd6e-4dcb-944a-39d957787a90",
+            "reference_response_ids": [
+              "resp_0754dde59ae66838006aa07724bd2c87d094de9a99695a4694",
+              "resp_0754dde59ae66838006aa07727725487d08cda6c9d4588bb47",
+              "resp_0754dde59ae66838006aa0772bc3a087d0af827cd0f0a1885a",
+              "resp_0754dde59ae66838006aa0772ebd7c87d0aa446aef28394ff9",
+              "resp_0754dde59ae66838006aa0774407bc87d0bbdcb78efb57bbe3",
+              "resp_0754dde59ae66838006aa0774976c887d0a48791fa65be82a1",
+              "resp_0754dde59ae66838006aa0774cd29487d0bd95b0a4d02b297f"
+            ]
+          },
+          {
+            "case_id": "expense-5",
+            "program_run_id": "3d5f799a-331a-4c46-9fd6-99b5c4ed06b3",
+            "reference_run_id": "ccb1f97e-eba4-473c-845f-5738ff742ba7",
+            "reference_response_ids": [
+              "resp_048fdcd8a478a885006aa0775340d487d0abca18c4e8235fb2",
+              "resp_048fdcd8a478a885006aa07755c18487d0bebba06fa2241850",
+              "resp_048fdcd8a478a885006aa07761fb4087d09b131045482b9cdb",
+              "resp_048fdcd8a478a885006aa0776515bc87d0b8d91c2301d748df",
+              "resp_048fdcd8a478a885006aa0777a3cb087d0b0cc152fe57e75c7",
+              "resp_048fdcd8a478a885006aa07781914087d0aeac48ad3f6d6233",
+              "resp_048fdcd8a478a885006aa077875d7487d08173d0a08e1bd739"
+            ]
+          },
+          {
+            "case_id": "expense-6",
+            "program_run_id": "77d2eeb1-2ffa-4d67-804f-272f47674991",
+            "reference_run_id": "e620f8b7-7167-41f6-ae74-11aa86c8fdba",
+            "reference_response_ids": [
+              "resp_0716f3d55c8f17fa006aa07753bc6087d0990717057342c9e3",
+              "resp_0716f3d55c8f17fa006aa07760b86c87d082b043f274710c77",
+              "resp_0716f3d55c8f17fa006aa07765891887d09a064053e37675c1",
+              "resp_0716f3d55c8f17fa006aa07768b5a487d0be46ce638ec7aeb3",
+              "resp_0716f3d55c8f17fa006aa0777e236487d0b269d7f3cfb691ea",
+              "resp_0716f3d55c8f17fa006aa07785789887d0b2d4feaec4483ad6",
+              "resp_0716f3d55c8f17fa006aa077888ae887d08249938a5cae8c71",
+              "resp_0716f3d55c8f17fa006aa0778d6de487d096aa0c964c286135"
+            ]
+          },
+          {
+            "case_id": "expense-7",
+            "program_run_id": "80422053-aaed-47c5-ad31-247e8ef0d0e9",
+            "reference_run_id": "6f22dd8a-82a9-4736-9606-62e6dd6ff97b",
+            "reference_response_ids": [
+              "resp_0e6f9361799865c5006aa0778d430887d092f25e0dd52dd8de",
+              "resp_0e6f9361799865c5006aa0778fd79c87d0ba2dadf6bed0b671",
+              "resp_0e6f9361799865c5006aa07793d0f887d0a1897665d5c85c9e",
+              "resp_0e6f9361799865c5006aa0779692f487d0b6fcba0d437d06a4",
+              "resp_0e6f9361799865c5006aa077ab6e7c87d09ea1de4c2ea7b352",
+              "resp_0e6f9361799865c5006aa077b0353487d088dec506e2c5cbeb",
+              "resp_0e6f9361799865c5006aa077b7575c87d0a12c3bd3b5c2fae6",
+              "resp_0e6f9361799865c5006aa077be89d487d09ff966213d850728"
+            ]
+          },
+          {
+            "case_id": "expense-8",
+            "program_run_id": "bba34aaf-d0e2-42e4-8417-88e0e3c18181",
+            "reference_run_id": "ab35ba64-ce6a-460c-bde7-5504e16d8218",
+            "reference_response_ids": [
+              "resp_00d36bf3b45855ba006aa07793a23487d0ba06411c4ae7a8cb",
+              "resp_00d36bf3b45855ba006aa07796e00087d08b067e509624d0d0",
+              "resp_00d36bf3b45855ba006aa0779eb50087d0861cb1a2dfad9853",
+              "resp_00d36bf3b45855ba006aa077a1204487d0aa3a080500e99595",
+              "resp_00d36bf3b45855ba006aa077b68e8c87d0bddf5c01802181ff",
+              "resp_00d36bf3b45855ba006aa077bc18a487d087d9a84268230af4",
+              "resp_00d36bf3b45855ba006aa077bf8e9487d0a454b9592d9d83eb"
+            ]
+          }
+        ]
+      },
+      "10f6f947-fa71-42ae-a623-c86c6097f08a": {
+        "candidate_hash": "6f83a7afde1d4e02b2e67826242f22557bcc9d986cafb420520724310fd04187",
+        "paired_cases": [
+          {
+            "case_id": "c1",
+            "program_run_id": "50e5823e-25ce-48c2-9842-59d70756bbe9",
+            "reference_run_id": "2e5a926b-98fb-42eb-85dd-20a5c07f59dc",
+            "reference_response_ids": [
+              "resp_00f6d4965c9757d3006aa073199a2887d080774617dc2afbad",
+              "resp_00f6d4965c9757d3006aa0731d3be487d0965a103d4d232805",
+              "resp_00f6d4965c9757d3006aa07320452887d0a4d84863e24392e1",
+              "resp_00f6d4965c9757d3006aa073233f7087d0b7bbdfc855d1c4fb",
+              "resp_00f6d4965c9757d3006aa0732809f487d0b1dbeff9fcbd8d23",
+              "resp_00f6d4965c9757d3006aa0732b715087d08f8b8d146e94fa5c",
+              "resp_00f6d4965c9757d3006aa0733378ec87d0ab87f1ed5c2bed14",
+              "resp_00f6d4965c9757d3006aa0733a35a887d0b3af9fe3f435c438"
+            ]
+          },
+          {
+            "case_id": "c2",
+            "program_run_id": "8bdba595-00a5-4fa7-b71c-1caae1fd81a5",
+            "reference_run_id": "959e8a51-17c1-416c-a86e-f7d0c42ff027",
+            "reference_response_ids": [
+              "resp_06ab23122a459114006aa073199e3c87d08fbf3702de7a03e5",
+              "resp_06ab23122a459114006aa0731c8a8887d0a687e8458e6ca4a9",
+              "resp_06ab23122a459114006aa0731f5e2887d099844657f12c99c6",
+              "resp_06ab23122a459114006aa073256c4887d0ad532f9f8ea9ad3b",
+              "resp_06ab23122a459114006aa0732a651c87d0a23ec57260c6cdc4",
+              "resp_06ab23122a459114006aa0732d642487d094042d795079f679",
+              "resp_06ab23122a459114006aa07333740487d086a756a0de740f83",
+              "resp_06ab23122a459114006aa07336583887d091d21c8109516167"
+            ]
+          },
+          {
+            "case_id": "c3",
+            "program_run_id": "0d326cee-1cea-4bd2-baf9-2b144a322c03",
+            "reference_run_id": "63d5429b-bbce-4dc9-8a55-c9eda3e04478",
+            "reference_response_ids": [
+              "resp_08ff652be3a611a0006aa0733bc35887d08af041e67b91c894",
+              "resp_08ff652be3a611a0006aa0733edd1887d0b9d6c369ddf1c29f",
+              "resp_08ff652be3a611a0006aa07341f77c87d0aa4c4164c4d81c7a",
+              "resp_08ff652be3a611a0006aa07344c60087d0bf3c9493b765c45c",
+              "resp_08ff652be3a611a0006aa07349563887d0897c5878adeedb59",
+              "resp_08ff652be3a611a0006aa0734d0ba887d084fc451221ecace1",
+              "resp_08ff652be3a611a0006aa07355a92487d0a8388cca8643c4fa",
+              "resp_08ff652be3a611a0006aa0735e221087d08baaa62d22b3c6a2"
+            ]
+          },
+          {
+            "case_id": "c4",
+            "program_run_id": "f374a106-77a6-415e-9bf2-5a24c6e8b8db",
+            "reference_run_id": "4de90a13-5075-4b67-b6e7-2b2f4d8fa78e",
+            "reference_response_ids": [
+              "resp_0e4c6e640e3115ce006aa07346e16087d0a44e2b7c353ad3df",
+              "resp_0e4c6e640e3115ce006aa0734a033887d0a81004cdad988a0d",
+              "resp_0e4c6e640e3115ce006aa0735273a887d089f701bf71dc549e",
+              "resp_0e4c6e640e3115ce006aa07355304c87d0824729534eca92a9",
+              "resp_0e4c6e640e3115ce006aa07359d0c887d0985d59ef08458801",
+              "resp_0e4c6e640e3115ce006aa073627cdc87d09c3568131d307ba2",
+              "resp_0e4c6e640e3115ce006aa07368f5b087d08f12904b84b3ea25",
+              "resp_0e4c6e640e3115ce006aa0736c86bc87d0a5cc9d6993f93e80"
+            ]
+          },
+          {
+            "case_id": "c5",
+            "program_run_id": "3d3cc1cd-2820-44e5-9906-43a2e2c755fc",
+            "reference_run_id": "fe0510db-65d1-4bb8-b989-88f63d22c879",
+            "reference_response_ids": [
+              "resp_08b960a9e5398c7e006aa0736438fc87d0b2f9afa06193ef93",
+              "resp_08b960a9e5398c7e006aa073675dbc87d09e8a98269b3cd00d",
+              "resp_08b960a9e5398c7e006aa0736cb09887d084bc0d7508c0b1b5",
+              "resp_08b960a9e5398c7e006aa07376cff087d090109764c71605db",
+              "resp_08b960a9e5398c7e006aa0737a240c87d09ea9721c97d8b5de",
+              "resp_08b960a9e5398c7e006aa073800bc087d0b3346cc3087aac82",
+              "resp_08b960a9e5398c7e006aa07382a3b887d09905d8519de70ff2"
+            ]
+          },
+          {
+            "case_id": "c6",
+            "program_run_id": "9a0556b2-6d7b-4562-afc1-5ac325936173",
+            "reference_run_id": "4ec6af30-9e1b-4521-8826-452f59d60cec",
+            "reference_response_ids": [
+              "resp_0b3689680fda2438006aa07371f09087d08386c942a4a6028e",
+              "resp_0b3689680fda2438006aa0737516a887d0bd6ba29ea5ff1cc0",
+              "resp_0b3689680fda2438006aa07378068c87d0acba1e90e72b98da",
+              "resp_0b3689680fda2438006aa0737aeb1c87d0b99876f7e57225a5",
+              "resp_0b3689680fda2438006aa0737f8bc487d0915348d0d61cd79d",
+              "resp_0b3689680fda2438006aa07386a65087d09b929acad2aa2ab9",
+              "resp_0b3689680fda2438006aa0738d839487d08423ff6fd20db5fd",
+              "resp_0b3689680fda2438006aa073908ab487d0a6efd9abff814997"
+            ]
+          },
+          {
+            "case_id": "c7",
+            "program_run_id": "6180c196-3ce1-4ccb-bd0c-0f98687d29f8",
+            "reference_run_id": "fd338e39-5af7-48fb-93c2-8b70c1a5b678",
+            "reference_response_ids": [
+              "resp_004378f6b1e09732006aa07388a9e087d08fa9d87cfd592678",
+              "resp_004378f6b1e09732006aa0738ad7fc87d09b68a948a622c295",
+              "resp_004378f6b1e09732006aa0738d8b2c87d09a422ee224b4aec7",
+              "resp_004378f6b1e09732006aa0739064f087d09271e648bbb828d7",
+              "resp_004378f6b1e09732006aa073954c7087d0a2bcd9b70c061c25",
+              "resp_004378f6b1e09732006aa07399408c87d0b82905812e675192",
+              "resp_004378f6b1e09732006aa073a3313487d0808d63c5b4be6189",
+              "resp_004378f6b1e09732006aa073a7087487d09574615d126d710b"
+            ]
+          },
+          {
+            "case_id": "c8",
+            "program_run_id": "b11b4014-490d-48b7-9571-e13a214cae61",
+            "reference_run_id": "32613b0b-962c-4ee1-8292-5c7f4aa8217f",
+            "reference_response_ids": [
+              "resp_094d4d8d2cfb5cd3006aa073968b4087d0b6b7659e35585dc2",
+              "resp_094d4d8d2cfb5cd3006aa0739a320c87d081a30605b749e1bb",
+              "resp_094d4d8d2cfb5cd3006aa0739e266087d0a73895467bfb2c72",
+              "resp_094d4d8d2cfb5cd3006aa073a0d09487d0a481d851af2b9e4b",
+              "resp_094d4d8d2cfb5cd3006aa073ab258087d0931b98ed7942db0a",
+              "resp_094d4d8d2cfb5cd3006aa073b1249c87d0bb530e5348f022fb",
+              "resp_094d4d8d2cfb5cd3006aa073b8cac487d0a616a77bca139819",
+              "resp_094d4d8d2cfb5cd3006aa073bc861487d0a363e5216dbd114d"
+            ]
+          }
+        ]
+      },
+      "da181aa7-d193-4666-9aee-b7fb7a8e196e": {
+        "candidate_hash": "33e5eaa3e201afbe554c28812696a56323669246cf14b8d87a6b4206346d6b4a",
+        "paired_cases": [
+          {
+            "case_id": "c1",
+            "program_run_id": "7181d831-c9c4-4d43-992e-b687045f924a",
+            "reference_run_id": "cc848692-f22d-4a98-be6f-0289a529cd4f",
+            "reference_response_ids": [
+              "resp_0e55207c34539f46006aa079d2a4d487d0897b42a3aad5451d",
+              "resp_0e55207c34539f46006aa079db0d8887d0b490e335468c123c",
+              "resp_0e55207c34539f46006aa079e1c10087d0b5b12672bd09434c",
+              "resp_0e55207c34539f46006aa079ea003087d0bffdadb16235732c",
+              "resp_0e55207c34539f46006aa079f36b8487d09fb16e00e031a181",
+              "resp_0e55207c34539f46006aa079fa46dc87d09eee62d544359fbe"
+            ]
+          },
+          {
+            "case_id": "c2",
+            "program_run_id": "a91198d1-1263-4e4c-a100-4652446db216",
+            "reference_run_id": "218835da-0764-482c-a7a4-a6873e597b59",
+            "reference_response_ids": [
+              "resp_07af620f90ee9941006aa079d28de487d0971bb6e26376b21d",
+              "resp_07af620f90ee9941006aa079d516e087d09701f591da85f2ea",
+              "resp_07af620f90ee9941006aa079d97bec87d0b405cc12dfba1862",
+              "resp_07af620f90ee9941006aa079dcb21887d0aa9559eb8273006a",
+              "resp_07af620f90ee9941006aa079e3623c87d09d315046c0e1d7f7",
+              "resp_07af620f90ee9941006aa079e6f2b487d08bd2853f584f19d7"
+            ]
+          },
+          {
+            "case_id": "c3",
+            "program_run_id": "5e14b8ae-8721-475a-8625-d3e4cb41d419",
+            "reference_run_id": "8ad3f826-d1fd-408a-9229-26f2f42c46ef",
+            "reference_response_ids": [
+              "resp_034ad8e7cc105c91006aa079efd90c87d08c22885b0fdf231c",
+              "resp_034ad8e7cc105c91006aa079f3174c87d09e54903479e5534e",
+              "resp_034ad8e7cc105c91006aa079f8781087d09749b4a6e171e172",
+              "resp_034ad8e7cc105c91006aa079fd7ba487d087555286ed76db48",
+              "resp_034ad8e7cc105c91006aa07a06662487d0a71fe1530022a6ed",
+              "resp_034ad8e7cc105c91006aa07a09961887d0b0579dca22af752f"
+            ]
+          },
+          {
+            "case_id": "c4",
+            "program_run_id": "7e45f43f-d3ae-4c0f-9372-2511f32cab0b",
+            "reference_run_id": "08ac4d0e-9839-446f-8dce-703d0e35f37a",
+            "reference_response_ids": [
+              "resp_0d3a8094b1f36556006aa079ffbb4487d0bbda837cb08898cd",
+              "resp_0d3a8094b1f36556006aa07a024d2c87d0b2725a786811c7de",
+              "resp_0d3a8094b1f36556006aa07a06575c87d0a7b1a4a72dfb96a1",
+              "resp_0d3a8094b1f36556006aa07a098a2c87d0a1d2eea2fca27c30",
+              "resp_0d3a8094b1f36556006aa07a0ff75c87d0a7176e484e167234",
+              "resp_0d3a8094b1f36556006aa07a1bfa5887d0870db3465634867d"
+            ]
+          },
+          {
+            "case_id": "c5",
+            "program_run_id": "1c628e59-ec8a-47cc-a874-a12faeacf398",
+            "reference_run_id": "de8bba8f-d341-4224-9f33-3d386d3b1eb7",
+            "reference_response_ids": [
+              "resp_01ec74073efe23eb006aa07a0f500887d084fe37aed9b1b001",
+              "resp_01ec74073efe23eb006aa07a17527487d09b87229a502f1ce5",
+              "resp_01ec74073efe23eb006aa07a1c317c87d083e74d4655e07b61",
+              "resp_01ec74073efe23eb006aa07a20618887d0b4938ec909776114",
+              "resp_01ec74073efe23eb006aa07a2abb3487d0a09f0293b5738c9c",
+              "resp_01ec74073efe23eb006aa07a2e97b087d0a07aec11032c71d3"
+            ]
+          },
+          {
+            "case_id": "c6",
+            "program_run_id": "9674e857-7fe3-45ca-8d8b-f03b70d2ab4d",
+            "reference_run_id": "d666d4bc-7992-4080-9693-6475817de256",
+            "reference_response_ids": [
+              "resp_025de4d3ac449e62006aa07a28301087d0b228e6a4eff802da",
+              "resp_025de4d3ac449e62006aa07a2b745487d0b55a93877c3b36cb",
+              "resp_025de4d3ac449e62006aa07a378cf087d09c0cd7115eed5a8d",
+              "resp_025de4d3ac449e62006aa07a3d139487d081fa29cbee1ae275",
+              "resp_025de4d3ac449e62006aa07a43e46887d0abd326aa2b5993e5",
+              "resp_025de4d3ac449e62006aa07a479fdc87d094f656e4695520da"
+            ]
+          },
+          {
+            "case_id": "c7",
+            "program_run_id": "918aeb45-35f2-4961-84a4-127bc1c76c91",
+            "reference_run_id": "f382ea88-54ae-412a-b42f-5197987a637a",
+            "reference_response_ids": [
+              "resp_0c3c0b8fe41df55a006aa07a3463dc87d0a2bae7a60e006cfb",
+              "resp_0c3c0b8fe41df55a006aa07a37370c87d092538f46902c18fd",
+              "resp_0c3c0b8fe41df55a006aa07a3d0c5c87d0889c2a13d992a512",
+              "resp_0c3c0b8fe41df55a006aa07a405f3087d0acbb401b76d0dc88",
+              "resp_0c3c0b8fe41df55a006aa07a46752887d0bf35b3743dc45f2b",
+              "resp_0c3c0b8fe41df55a006aa07a49fdd087d0bd01b1f5c183aa50"
+            ]
+          },
+          {
+            "case_id": "c8",
+            "program_run_id": "ce94bacc-7b96-41e2-bf36-162d63707693",
+            "reference_run_id": "1c2d6146-0767-4292-bca2-eca72081a980",
+            "reference_response_ids": [
+              "resp_0df66cbeb8ddbdc0006aa07a4fc91087d0af33088ec7cb85c1",
+              "resp_0df66cbeb8ddbdc0006aa07a5288fc87d0bd2828953b2a3e9f",
+              "resp_0df66cbeb8ddbdc0006aa07a57210087d0b62dad48a6146674",
+              "resp_0df66cbeb8ddbdc0006aa07a5a8d7487d09caeb3d6c44dc940",
+              "resp_0df66cbeb8ddbdc0006aa07a6111bc87d08f42ca091bb2f3f1",
+              "resp_0df66cbeb8ddbdc0006aa07a65339887d08f545b7d529ab767"
+            ]
+          }
+        ]
+      },
+      "f6ebd8f0-eaf2-4e34-94bd-893dd7ef71dc": {
+        "candidate_hash": "a5666231ea156c45da4fc2fd62cfcad56d325803535b5414ad528b9164d08fd1",
+        "paired_cases": [
+          {
+            "case_id": "expense-1",
+            "program_run_id": "68f671e2-3cef-4a41-909e-3dd236c5ba28",
+            "reference_run_id": "3b77ef3b-66cc-4aae-a278-f55d28f98ba5",
+            "reference_response_ids": [
+              "resp_0dc5b29821c758f8006aa07af97e5087d08e4e6ef8df37c6bc",
+              "resp_0dc5b29821c758f8006aa07afc15c887d098a7be98e0b451b6",
+              "resp_0dc5b29821c758f8006aa07b027bb087d0a987aa4565ae03cf",
+              "resp_0dc5b29821c758f8006aa07b0aaeac87d0a960c65400f06221",
+              "resp_0dc5b29821c758f8006aa07b24185087d0b66b0aef776f0e62",
+              "resp_0dc5b29821c758f8006aa07b295c8c87d0ba926f303fd865ca",
+              "resp_0dc5b29821c758f8006aa07b3f89dc87d093870fc5f00e9d45"
+            ]
+          },
+          {
+            "case_id": "expense-2",
+            "program_run_id": "d78c5603-384e-4d9d-b445-e044f33a5b56",
+            "reference_run_id": "43c31ee0-cf89-46b3-b570-4dd8e8dfc3b0",
+            "reference_response_ids": [
+              "resp_08809e59f755778f006aa07af9585487d0976127e738b482ec",
+              "resp_08809e59f755778f006aa07afc2acc87d097c067763a15d32e",
+              "resp_08809e59f755778f006aa07b04daac87d0aae9b47f289ba234",
+              "resp_08809e59f755778f006aa07b0d505087d082e6c453b32ef35e",
+              "resp_08809e59f755778f006aa07b23fff887d0a615c75dabfd67ac",
+              "resp_08809e59f755778f006aa07b2c250487d0813c291fd1260e18",
+              "resp_08809e59f755778f006aa07b41f7f087d08f00d2e3d5975653",
+              "resp_08809e59f755778f006aa07b49e89887d0bd15bf7696a74f81"
+            ]
+          },
+          {
+            "case_id": "expense-3",
+            "program_run_id": "930905b6-0f45-40fa-9c6f-fb7415284b82",
+            "reference_run_id": "c242bab6-a400-4d3f-b9de-e62d8be4a4ec",
+            "reference_response_ids": [
+              "resp_07a4c180578398f4006aa07b447e1887d0b486ba960b44efe2",
+              "resp_07a4c180578398f4006aa07b47437887d0b45d4457e73d862d",
+              "resp_07a4c180578398f4006aa07b4b359c87d09b88babe4e2aef63",
+              "resp_07a4c180578398f4006aa07b510c4087d093fe509fb308420a",
+              "resp_07a4c180578398f4006aa07b6770c887d0918913f54a5fc000",
+              "resp_07a4c180578398f4006aa07b77b4ec87d0810993ebdc44df66",
+              "resp_07a4c180578398f4006aa07b81b10087d0b84597c65eba692a"
+            ]
+          },
+          {
+            "case_id": "expense-4",
+            "program_run_id": "b10e0efa-cdf8-4a78-bf29-cb7b686bc297",
+            "reference_run_id": "69a31240-27e9-4256-9b90-101393317657",
+            "reference_response_ids": [
+              "resp_08631f68fafbe353006aa07b4ea7cc87d0b7e1dca51d88f14d",
+              "resp_08631f68fafbe353006aa07b510ac087d081e8812fd63f5eb4",
+              "resp_08631f68fafbe353006aa07b5cfd1087d086bc2cc6d7db8eb0",
+              "resp_08631f68fafbe353006aa07b69247487d0ab2f4d32d7d0b476",
+              "resp_08631f68fafbe353006aa07b7db4f887d0821c61fa2ab442c4",
+              "resp_08631f68fafbe353006aa07b877acc87d08b3c27316b05d147",
+              "resp_08631f68fafbe353006aa07b8dcb2887d0b4a68cea75c9fa4e"
+            ]
+          },
+          {
+            "case_id": "expense-5",
+            "program_run_id": "13ae7528-f901-4412-8cc3-831b290c334e",
+            "reference_run_id": "9c507458-3eb4-47cc-97d1-3fe6b32778c3",
+            "reference_response_ids": [
+              "resp_0af85903e3b8aff5006aa07b85f94487d083e3e74303979e74",
+              "resp_0af85903e3b8aff5006aa07b8a41e487d085758c6cbb059766",
+              "resp_0af85903e3b8aff5006aa07b9000d487d09d18e4fcaedc2ddf",
+              "resp_0af85903e3b8aff5006aa07b94031c87d08bb2932135148608",
+              "resp_0af85903e3b8aff5006aa07bab48ec87d092bfc36e31bae771",
+              "resp_0af85903e3b8aff5006aa07bbce0e087d0a559f62b670f8c37",
+              "resp_0af85903e3b8aff5006aa07bc7734c87d0a011c7a4561ba441"
+            ]
+          },
+          {
+            "case_id": "expense-6",
+            "program_run_id": "6915bee7-674d-4f3a-97fd-b91c40446de7",
+            "reference_run_id": "fa3e7b0f-2791-4290-bc6a-e9f269e7933d",
+            "reference_response_ids": [
+              "resp_08be0b3b90d33383006aa07b92867c87d09089917894564151",
+              "resp_08be0b3b90d33383006aa07b97aba487d0b042995b906944f0",
+              "resp_08be0b3b90d33383006aa07ba7af2c87d089d8ddd62215f94c",
+              "resp_08be0b3b90d33383006aa07bb7c38087d09fb2ef084ad24bb0",
+              "resp_08be0b3b90d33383006aa07bd05b3487d0af072d5c16facaed",
+              "resp_08be0b3b90d33383006aa07bd70e9c87d0be2bbbe9ce28d55c",
+              "resp_08be0b3b90d33383006aa07be7391c87d09516f74aa6388563",
+              "resp_08be0b3b90d33383006aa07bebec7087d0838bdce6795fb226"
+            ]
+          },
+          {
+            "case_id": "expense-7",
+            "program_run_id": "f3011132-1d4e-4040-ba84-f2807808ce23",
+            "reference_run_id": "c3c38e82-7395-4796-80a6-41df5ff09342",
+            "reference_response_ids": [
+              "resp_09ccfec2a26d807e006aa07bdd423887d093b2b1cb484d153d",
+              "resp_09ccfec2a26d807e006aa07be0f16887d0822ca0363daa8b71",
+              "resp_09ccfec2a26d807e006aa07beb972c87d0b5c4a374d056abb0",
+              "resp_09ccfec2a26d807e006aa07bf11ec087d0a721a71cac18517e",
+              "resp_09ccfec2a26d807e006aa07c07236087d0b2f8fc4b3bf32e91",
+              "resp_09ccfec2a26d807e006aa07c15ee9c87d09e4804c579dc2bd3",
+              "resp_09ccfec2a26d807e006aa07c19adb087d0b8f5e34d9bd39f99"
+            ]
+          },
+          {
+            "case_id": "expense-8",
+            "program_run_id": "83af7017-527a-4fd1-9b77-b60ae267276c",
+            "reference_run_id": "f7a35086-5a2b-4ab1-bb9b-1b46d0c8be89",
+            "reference_response_ids": [
+              "resp_01095b8b69a6860a006aa07bf8d80087d084e5652e2a52ba8e",
+              "resp_01095b8b69a6860a006aa07bfd47bc87d0bf00fcb2daab1c8e",
+              "resp_01095b8b69a6860a006aa07c0424d887d0b0380bb3727dba5e",
+              "resp_01095b8b69a6860a006aa07c0b653887d0bdd151071c0d3927",
+              "resp_01095b8b69a6860a006aa07c217fc087d0af98b445544ca7fa",
+              "resp_01095b8b69a6860a006aa07c255dcc87d0b64eea6b7579afa7",
+              "resp_01095b8b69a6860a006aa07c2863f887d0b9a7e4f20a9f1c36",
+              "resp_01095b8b69a6860a006aa07c30282087d0ab32f7fd19a9acc4"
+            ]
+          }
+        ]
+      },
+      "74ab8db8-9bcf-475d-8e9d-52967e1f6367": {
+        "candidate_hash": "5b4fd2134fdd039f0927d4219b3be4cbd0275a2a5f673fd715512880b36cb9c3",
+        "paired_cases": [
+          {
+            "case_id": "c1",
+            "program_run_id": "9090066a-bfd7-4200-b387-11178397b101",
+            "reference_run_id": "a39bd47a-b035-4ccf-adae-9663ace739db",
+            "reference_response_ids": [
+              "resp_005db1c65a75275d006aa07cd5973087d0a7bb741ed6861d32",
+              "resp_005db1c65a75275d006aa07cd8056487d0bfa8957ad6c5e45c",
+              "resp_005db1c65a75275d006aa07cde0c2487d0a47184531cf49c12",
+              "resp_005db1c65a75275d006aa07ce051cc87d0926ddcf1f43dca97",
+              "resp_005db1c65a75275d006aa07ce9384c87d09148f306a1dea3c5",
+              "resp_005db1c65a75275d006aa07cebf96487d0964dcba9d21d8335",
+              "resp_005db1c65a75275d006aa07cee9e4887d080698a1f9a4f9598"
+            ]
+          },
+          {
+            "case_id": "c2",
+            "program_run_id": "3496150e-a33c-48d6-ad92-9ebfb7a22805",
+            "reference_run_id": "0c725fb8-820d-4542-a055-2eb7a5c578d4",
+            "reference_response_ids": [
+              "resp_07e282476ca19443006aa07cd599f887d088b05750226ae91a",
+              "resp_07e282476ca19443006aa07cd89dec87d0a111c7aa011fa696",
+              "resp_07e282476ca19443006aa07ce0fe2c87d08ad49de1b9add2ff",
+              "resp_07e282476ca19443006aa07ce3e47487d0b1da049c822da53e",
+              "resp_07e282476ca19443006aa07ce9253887d0a9f6f267d7bc3a89",
+              "resp_07e282476ca19443006aa07cf7767487d0b2be144abe771797",
+              "resp_07e282476ca19443006aa07cfef94487d0829b31662b2fb70b"
+            ]
+          },
+          {
+            "case_id": "c3",
+            "program_run_id": "7a7743da-5c7f-4916-bc13-6244b0ad7246",
+            "reference_run_id": "73f3dddc-4c9a-49db-9720-3a0c736c0cd3",
+            "reference_response_ids": [
+              "resp_01d03c38559a2008006aa07cf30f5487d0b071d3670df8c402",
+              "resp_01d03c38559a2008006aa07cf56c3c87d0b7458ada1a32a95a",
+              "resp_01d03c38559a2008006aa07cf91c0887d0816e7f7f6deee93a",
+              "resp_01d03c38559a2008006aa07cfc2e5487d09f2d481eee754c83",
+              "resp_01d03c38559a2008006aa07d0129e487d0b4087fa3a9d7b789",
+              "resp_01d03c38559a2008006aa07d036e8887d08f3c5a01be4b729b",
+              "resp_01d03c38559a2008006aa07d061ab087d0bc5cb55d26680be1"
+            ]
+          },
+          {
+            "case_id": "c4",
+            "program_run_id": "9dddb918-8573-4239-a675-eba2cf992e8d",
+            "reference_run_id": "ab08aa2c-ac68-4183-8bbf-9a67569a5195",
+            "reference_response_ids": [
+              "resp_0fb4f63c44f02546006aa07d02d1a487d0a499e8f7eae0b696",
+              "resp_0fb4f63c44f02546006aa07d04c45c87d0a9ec9e2d8406117e",
+              "resp_0fb4f63c44f02546006aa07d08022c87d0bdd4e0bdef4dae35",
+              "resp_0fb4f63c44f02546006aa07d0a4abc87d09b0d9d074d8eb950",
+              "resp_0fb4f63c44f02546006aa07d0ecba487d09f002db941918a57",
+              "resp_0fb4f63c44f02546006aa07d11aed487d0bd60b359f1c8f263",
+              "resp_0fb4f63c44f02546006aa07d14417c87d08a5a37f5b3f1cb2b"
+            ]
+          },
+          {
+            "case_id": "c5",
+            "program_run_id": "c28f4d1e-a271-425f-860f-2297da5c4a90",
+            "reference_run_id": "c8641e55-72ed-4b5b-9eec-dd2a7b4be445",
+            "reference_response_ids": [
+              "resp_044a20168a16d9a6006aa07d10aed087d087049c6d5e4ebd5e",
+              "resp_044a20168a16d9a6006aa07d16e27887d0a2cd24007a66bbfc",
+              "resp_044a20168a16d9a6006aa07d1a4ee087d0af4289cbeb71faec",
+              "resp_044a20168a16d9a6006aa07d1d4ef087d0836a8d0d0916f78c",
+              "resp_044a20168a16d9a6006aa07d23c78887d0a378d02822cefcf2",
+              "resp_044a20168a16d9a6006aa07d25f06487d0ba59a4233e4ad502",
+              "resp_044a20168a16d9a6006aa07d286e1487d094e873b039586549"
+            ]
+          },
+          {
+            "case_id": "c6",
+            "program_run_id": "dd68fccb-77b9-473c-87f5-e9191ffeedd8",
+            "reference_run_id": "f6b2942b-744c-4f0e-80be-fd40ada53eeb",
+            "reference_response_ids": [
+              "resp_026ac7eaf628cbf0006aa07d1842c087d0a6f6d2a0fabb0709",
+              "resp_026ac7eaf628cbf0006aa07d1a47cc87d0862ab3329d75bad3",
+              "resp_026ac7eaf628cbf0006aa07d1d813487d0a7e718ed406c2bb5",
+              "resp_026ac7eaf628cbf0006aa07d20e67487d0b9878535d9c9f3f9",
+              "resp_026ac7eaf628cbf0006aa07d27128887d08015396793858061",
+              "resp_026ac7eaf628cbf0006aa07d30fc9c87d0a3251d3faf751537",
+              "resp_026ac7eaf628cbf0006aa07d3584b087d099e442490991eccf"
+            ]
+          },
+          {
+            "case_id": "c7",
+            "program_run_id": "970659e3-dff8-42db-aef7-65b2b7ceaeb5",
+            "reference_run_id": "1df355ea-b473-4bd4-92c5-0e19c8b5e9ec",
+            "reference_response_ids": [
+              "resp_0ded01088288b184006aa07d2cf16087d0a1ef1b53cec5e9b7",
+              "resp_0ded01088288b184006aa07d2ef21487d096490b41c0fd7cfb",
+              "resp_0ded01088288b184006aa07d35173487d096b0c8547cc9ab9c",
+              "resp_0ded01088288b184006aa07d3760ec87d080f78db19d916706",
+              "resp_0ded01088288b184006aa07d3bf80487d0a7b9bd33178f681e",
+              "resp_0ded01088288b184006aa07d40846c87d0b9a1c8f655db9e0d",
+              "resp_0ded01088288b184006aa07d425e1087d0a98177787087c3bc"
+            ]
+          },
+          {
+            "case_id": "c8",
+            "program_run_id": "ddbbb096-0138-4216-ab88-011bc0a4cce8",
+            "reference_run_id": "ab3736a7-509e-4a24-bb21-5a2b31feef60",
+            "reference_response_ids": [
+              "resp_06976478a1a72b80006aa07d39579487d08a1f887c9bd4d218",
+              "resp_06976478a1a72b80006aa07d3b795c87d0953a68fcc6984541",
+              "resp_06976478a1a72b80006aa07d4198cc87d08cdc8e57de264882",
+              "resp_06976478a1a72b80006aa07d43c81887d084cb184c5166fa20",
+              "resp_06976478a1a72b80006aa07d4d2e1087d0ae8da806f9eb86a8",
+              "resp_06976478a1a72b80006aa07d4f749087d0a716baf60d481a8b",
+              "resp_06976478a1a72b80006aa07d5355a887d08134d329abd87651"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

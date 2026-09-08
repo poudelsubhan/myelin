@@ -128,6 +128,47 @@ class Compiler:
             "Do not add a final UI action solely to display results; "
             "the console shows business evidence."
         )
+        if trace.environment.app == "expense":
+            instructions = (
+                "Compile the successful expense trace into Program JSON matching the schema. "
+                "Use supplied high-confidence expense-login and expense-create HTTP steps exactly. "
+                "Use expense-submit HTTP candidate only when supplied. No browser login/prefix is "
+                "needed: HTTP login extracts bearer_token. Authorization "
+                "takes that raw secret ref; the declared adapter adds Bearer and syncs SPA storage "
+                "before a UI step with resume_url. Every UI step following HTTP MUST declare "
+                "resume_url variable expense_resume, or /#new for repairing creation. "
+                "Keep candidate IDs/dependencies. Use only successful real source action IDs. "
+                "All write steps need unique operation_key. UI check/fill uses argument value. "
+                "Compare integer cents with integer values. Final assertion checks business "
+                "$.expenses[0].status == submitted. Start with no variables and fresh auth. "
+                "For accepted steering, produce an explicit Branch whose condition EXACTLY matches "
+                "the accepted SteerMark predicate and source_steer_id. In then, fill Manager note "
+                "with approved by demo and check Confirm expense above $500 using actual source "
+                "actions. Otherwise is empty. Keep a SINGLE common UI Submit expense step after "
+                "the branch; it needs resume_url expense_resume for the false path. Preserve "
+                "Prior HTTP login/create must be preserved EXACTLY including source IDs for policy "
+                "updates; include prior.compiled_from too. Branch pre/post can assert "
+                "input amount_cents exists. Use real source IDs and server steer IDs. "
+                "Never infer a rule from a screenshot. Set policy_revision from the trace, all "
+                "supported revisions to the trace environment, parent_hash to prior_hash, and "
+                "version to prior.version+1 or 1 if absent. Include trace.run_id in compiled_from. "
+                "When repair_scope exists, keep every prior step outside it EXACTLY unchanged, "
+                "including children/source IDs/conditions, and replace only the failed step. "
+                "Return complete Program JSON only."
+            )
+        if (
+            repair_scope
+            and prior
+            and any(s.kind == "ui" and s.id in repair_scope for s in prior.steps)
+        ):
+            instructions += (
+                " The failed step is a genuine UI dependency. Repair it with UI "
+                "actions only. You may expand that one step into several UI steps, keeping its "
+                "original ID on one of them and assigning new IDs to additional actions. "
+                "Preserve the entire prefix/suffix exactly and final_post unchanged. "
+                "Use actual new repair action IDs for modal/consent actions. Do not bypass "
+                "the UI dependency using HTTP. completed writes must not be repeated."
+            )
         payload = {
             "schema": Program.model_json_schema(),
             "trace": trace.model_dump(mode="json"),
@@ -137,6 +178,12 @@ class Compiler:
             "repair_scope": repair_scope,
             "steer_marks": steer_marks or [],
         }
+        if tool_provider and hasattr(tool_provider, "compiler_context"):
+            payload["tool_context"] = tool_provider.compiler_context()
+            instructions += (
+                " Follow tool_context.instruction. Actually patch the staged "
+                "program before returning JSON."
+            )
         pending = [{"role": "user", "content": json.dumps(payload)}]
         previous = None
         corrections = 0
@@ -195,15 +242,13 @@ class Compiler:
                 program = Program.model_validate_json(response.output_text)
                 validate_program(program, trace, candidates, {self.settings.crm_url})
                 if repair_scope and prior:
-                    old = {s.id: s for s in prior.steps}
-                    new = {s.id: s for s in program.steps}
-                    if [s.id for s in prior.steps] != [s.id for s in program.steps]:
-                        raise BindingError("repair must preserve step ordering and IDs")
-                    for sid in old.keys() - set(repair_scope):
-                        if old[sid] != new[sid]:
-                            raise BindingError(f"repair changed unscoped step {sid}")
+                    from myelin.program.repair_scope import validate_scope
+
+                    validate_scope(program, prior, repair_scope)
                 if program.parent_hash != (prior.content_hash() if prior else None):
                     raise BindingError("incorrect parent hash")
+                if tool_provider and hasattr(tool_provider, "validate_output"):
+                    tool_provider.validate_output(program)
                 self.store.save("compiled-program.json", program)
                 await self.emit(
                     "program.compiled",

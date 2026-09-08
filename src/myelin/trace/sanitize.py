@@ -30,6 +30,12 @@ class Sanitizer:
         ):
             # A typed binding contains a reference name, not the credential value.
             return dict(value)
+        if (
+            key.lower() == "authorization"
+            and isinstance(value, str)
+            and value.startswith("Bearer ")
+        ):
+            return "Bearer " + self.register(value[7:])
         if SENSITIVE.fullmatch(key):
             return self.register(value)
         if isinstance(value, dict):
