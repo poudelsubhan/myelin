@@ -15,3 +15,6 @@ apps/*/data/
 # Private planning provenance; publish reviewed implementation specification only.
 myelin-session-transcript.md
 myelin-plan-review.md
+
+# Private implementation plan
+myelin-phase-plan.md

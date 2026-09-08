@@ -3,7 +3,7 @@
 Give Myelin a task. Astra figures it out once; Myelin compiles successful behavior
 into a checked program and calls Astra again when the app changes.
 
-Implementation follows [the full phase plan](myelin-phase-plan.md). Current work
+Implementation follows the private full-scope phase plan. Current work
 is **Phase 0**: executable shared contracts, an owned CRM, locked oracle examples,
 and live capability checks. Recording, compilation, repair, the Phase 4 core demo
 and Phases 5–7 remain required deliverables. They are not yet implemented.
