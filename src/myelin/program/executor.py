@@ -1,4 +1,5 @@
 import time
+from urllib.parse import urljoin
 from uuid import uuid4
 
 from myelin.contracts import ExecutionContext, FeatureUnavailable
@@ -81,6 +82,7 @@ class Executor:
                     url = bound_url(
                         resolver(step.url), {k: resolver(v) for k, v in step.path_params.items()}
                     )
+                    url = urljoin(session.settings.crm_url, url)
                     if step.query:
                         from urllib.parse import urlencode
 

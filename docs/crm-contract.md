@@ -35,3 +35,9 @@ modal; HTTP bypass remains valid and must be described as resilience. Phase 6
 must exercise an actual UI-dependent program for its consent repair demonstration.
 
 This is a loopback-only owned demo app, not a production authentication service.
+
+Phase 2 additive response binding: invoice creation/payment forms include a hidden
+`action_url` mirroring their ordinary form action. This exposes their existing
+fresh entity relationship to the declared hidden-input extractor without teaching
+the compiler an endpoint. It is observed in trace 65150b6a-d1cc-4d0b-a53f-8497d69ba410.
+It changes no write semantics and is excluded from business request hashes.

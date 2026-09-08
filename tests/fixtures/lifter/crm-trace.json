@@ -1,0 +1,399 @@
+{
+  "schema_version": 1,
+  "run_id": "65150b6a-d1cc-4d0b-a53f-8497d69ba410",
+  "workflow": "crm.create_invoice",
+  "inputs": {
+    "customer": "Acme Labs",
+    "description": "Live \"invoice\" café",
+    "quantity": 3,
+    "unit_price_cents": 1999,
+    "due_date": "2026-09-30"
+  },
+  "environment": {
+    "app": "crm",
+    "revision": "crm-v1",
+    "mutations": [],
+    "seed_version": "crm-seed-v1"
+  },
+  "policy_revision": "crm-policy-v1",
+  "initial_observation": "581617a9-2fae-44dd-92be-ea520ae08fdf",
+  "actions": [
+    {
+      "id": "34073b6e-4515-4b30-b2c9-74cc2036c847",
+      "response_id": "resp_0240461200caec55006aa06221800087d09d75461c10a6e4b8",
+      "call_id": "call_FN5sFIBwbFtNtlvsK5KHD6YD",
+      "intent": "Open app",
+      "operation": "navigate",
+      "target": null,
+      "arguments": {
+        "url": {
+          "kind": "literal",
+          "value": "http://localhost:8101"
+        }
+      },
+      "before_id": "b6e160b3-8f8f-4ac1-9032-f5f84c4b9593",
+      "after_id": "6f8e3f66-a685-448d-b2d2-ed4f01fc4975",
+      "request_ids": [
+        "331231e1-427d-4d8f-a014-c47f44bd1969"
+      ],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "6238a392-4ae1-4816-ad29-928e94a984c0",
+      "response_id": "resp_0240461200caec55006aa06224a57487d0a82ec587b6136f1f",
+      "call_id": "call_0m9mseg5E1qnqTXsV9V432sD",
+      "intent": "Open CRM",
+      "operation": "navigate",
+      "target": null,
+      "arguments": {
+        "url": {
+          "kind": "literal",
+          "value": "http://localhost:8101/crm"
+        }
+      },
+      "before_id": "f040e311-a9e6-42a4-bc32-83dffd54df3c",
+      "after_id": "968578ee-4a55-43a4-9226-f0d9145badb9",
+      "request_ids": [
+        "e74ec3b7-1ec3-437a-9f61-81bb4864f80a"
+      ],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "9c4f18da-f1c8-4a40-9a6b-1edb95efeeb7",
+      "response_id": "resp_0240461200caec55006aa062281e6087d0bec04dd22b0ace15",
+      "call_id": "call_oDDRPjJ1tduk6IOzJbqbhdBS",
+      "intent": "Find app login",
+      "operation": "navigate",
+      "target": null,
+      "arguments": {
+        "url": {
+          "kind": "literal",
+          "value": "http://localhost:8101/login"
+        }
+      },
+      "before_id": "39726f3f-042e-44ee-8963-1c9b77419207",
+      "after_id": "8502ae6b-09c6-450f-a7f1-b017f591462b",
+      "request_ids": [
+        "ecffd358-8b46-410d-9b50-ab46b6b5c84e"
+      ],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "086cd2eb-071c-46f5-94a0-f280c3fc3545",
+      "response_id": "resp_0240461200caec55006aa0622b57d887d085ec8962e8277324",
+      "call_id": "call_OcVRVR7EhYLhzEN4FiyOj3ka",
+      "intent": "Enter email",
+      "operation": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Email",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "secret",
+          "key": "email"
+        }
+      },
+      "before_id": "21b2f9e6-dbb3-4d4a-b46d-583f99225b54",
+      "after_id": "bce36a7d-94eb-4137-b391-fe3dbe7795a2",
+      "request_ids": [],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "5ffa7b44-a9e6-4fd6-8fbc-ede64df64b37",
+      "response_id": "resp_0240461200caec55006aa0622b57d887d085ec8962e8277324",
+      "call_id": "call_OcVRVR7EhYLhzEN4FiyOj3ka",
+      "intent": "Enter password",
+      "operation": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Password",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "secret",
+          "key": "password"
+        }
+      },
+      "before_id": "1fb31655-d0e8-48e2-bdf8-711e8b7a751f",
+      "after_id": "cceb3e2f-8687-4dfb-b2ed-3b0c12737709",
+      "request_ids": [],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "66f7c804-2e99-4077-9f20-fdcc85ff3ada",
+      "response_id": "resp_0240461200caec55006aa0622b57d887d085ec8962e8277324",
+      "call_id": "call_OcVRVR7EhYLhzEN4FiyOj3ka",
+      "intent": "Enter tenant",
+      "operation": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Tenant",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "secret",
+          "key": "tenant"
+        }
+      },
+      "before_id": "74e3a471-1e28-45bf-8cfd-bd1dbaf3c6de",
+      "after_id": "3e75521b-4adb-4e9b-9712-870058567314",
+      "request_ids": [],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "1baef9b0-6761-4929-b526-6fae01f2c61a",
+      "response_id": "resp_0240461200caec55006aa0622b57d887d085ec8962e8277324",
+      "call_id": "call_OcVRVR7EhYLhzEN4FiyOj3ka",
+      "intent": "Sign in",
+      "operation": "click",
+      "target": {
+        "strategy": "role",
+        "value": "Sign in",
+        "role": "button",
+        "exact": true
+      },
+      "arguments": {},
+      "before_id": "7be52881-b3a7-45fc-8855-b57a38f74197",
+      "after_id": "c7f225fe-16a8-4b24-8b40-9ac42db2ab83",
+      "request_ids": [
+        "cdde27c8-594a-4f8a-9c70-d30bc117e4da",
+        "6592bb71-7bbf-4f48-927e-d66020ff9137"
+      ],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "7813e5c3-8429-4723-8f5a-b288d3070f44",
+      "response_id": "resp_0240461200caec55006aa0622fd5a087d08304ce216e066e10",
+      "call_id": "call_4pdb2nFZPlfSMoHzqAHGYzqH",
+      "intent": "Create Acme Labs invoice",
+      "operation": "click",
+      "target": {
+        "strategy": "role",
+        "value": "Acme Labs",
+        "role": "link",
+        "exact": true
+      },
+      "arguments": {},
+      "before_id": "c9001fb6-926a-471b-b6d2-fef67f36fba2",
+      "after_id": "f9aa15f6-935f-4bf3-b0ec-25d40b5e695b",
+      "request_ids": [
+        "1f2d1519-be56-4200-a9d4-33b4719a7e5f"
+      ],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "fc56d2d8-3595-4ee0-b01e-d75ac8f13bb4",
+      "response_id": "resp_0240461200caec55006aa06233d3e087d0b5b2a991282e6c8c",
+      "call_id": "call_S0heNPBZZgyQ9vNZ5d8ekGR0",
+      "intent": "Enter description",
+      "operation": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Description",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "input",
+          "key": "description"
+        }
+      },
+      "before_id": "f7c8680f-3028-47d9-b221-898ef3dd0d69",
+      "after_id": "293f0c80-af7e-401f-b625-1665d417afb1",
+      "request_ids": [],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "83744212-06b0-4fa3-84b2-d8e3ebd52c63",
+      "response_id": "resp_0240461200caec55006aa06233d3e087d0b5b2a991282e6c8c",
+      "call_id": "call_S0heNPBZZgyQ9vNZ5d8ekGR0",
+      "intent": "Enter quantity",
+      "operation": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Quantity",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "input",
+          "key": "quantity"
+        }
+      },
+      "before_id": "ff612a4c-79dd-41e4-8482-75932848f8df",
+      "after_id": "2f7ac1dc-8377-4466-82dd-673e86cd454a",
+      "request_ids": [],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "bfb2f29b-e104-48c5-9cee-56151adc7736",
+      "response_id": "resp_0240461200caec55006aa06233d3e087d0b5b2a991282e6c8c",
+      "call_id": "call_S0heNPBZZgyQ9vNZ5d8ekGR0",
+      "intent": "Enter unit price",
+      "operation": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Unit price (cents)",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "input",
+          "key": "unit_price_cents"
+        }
+      },
+      "before_id": "28e5ffca-2982-489f-b698-ef78a923f96f",
+      "after_id": "52320435-5ed7-4458-b4aa-8ef530ea1a1e",
+      "request_ids": [],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "aabccd4c-f156-463c-b495-4ce8c203aed5",
+      "response_id": "resp_0240461200caec55006aa06233d3e087d0b5b2a991282e6c8c",
+      "call_id": "call_S0heNPBZZgyQ9vNZ5d8ekGR0",
+      "intent": "Enter calculated total",
+      "operation": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Invoice total (cents)",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "multiply_int",
+          "left": {
+            "kind": "input",
+            "key": "quantity"
+          },
+          "right": {
+            "kind": "input",
+            "key": "unit_price_cents"
+          }
+        }
+      },
+      "before_id": "02bd11b4-f6eb-4438-8b75-0e9d6e961e90",
+      "after_id": "55b1815f-d119-42ba-b530-8bfc1025b5a6",
+      "request_ids": [],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "8bba4330-dd5c-4c1a-a09b-a1489cd3a3d2",
+      "response_id": "resp_0240461200caec55006aa06233d3e087d0b5b2a991282e6c8c",
+      "call_id": "call_S0heNPBZZgyQ9vNZ5d8ekGR0",
+      "intent": "Enter due date",
+      "operation": "fill",
+      "target": {
+        "strategy": "label",
+        "value": "Due date",
+        "role": null,
+        "exact": true
+      },
+      "arguments": {
+        "value": {
+          "kind": "input",
+          "key": "due_date"
+        }
+      },
+      "before_id": "3559d114-1b94-4240-844b-7d71ca6a3f6a",
+      "after_id": "be371668-9f54-4328-9fb7-ed8a700d2c97",
+      "request_ids": [],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "754974e8-0112-48a0-a606-6efe60e3226b",
+      "response_id": "resp_0240461200caec55006aa06233d3e087d0b5b2a991282e6c8c",
+      "call_id": "call_S0heNPBZZgyQ9vNZ5d8ekGR0",
+      "intent": "Save invoice",
+      "operation": "click",
+      "target": {
+        "strategy": "role",
+        "value": "Create invoice",
+        "role": "button",
+        "exact": true
+      },
+      "arguments": {},
+      "before_id": "0c737dc0-e1a5-4659-980f-06c40bf62dab",
+      "after_id": "251a7831-b804-4397-af0a-bd8b2fe42efe",
+      "request_ids": [
+        "679271b5-a16a-4f3d-80da-847e7292cf0d",
+        "65007531-a93e-4685-9c24-c62cd8cfd1b4"
+      ],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    },
+    {
+      "id": "22994f2d-e94a-465f-889e-5a38202af7e3",
+      "response_id": "resp_0240461200caec55006aa0623a693887d0be025a836787e562",
+      "call_id": "call_X16pcPlac1fGGTS0nR1ka69j",
+      "intent": "Mark invoice paid",
+      "operation": "click",
+      "target": {
+        "strategy": "role",
+        "value": "Mark paid",
+        "role": "button",
+        "exact": true
+      },
+      "arguments": {},
+      "before_id": "d7b46202-0162-4285-a099-2d05f07fa420",
+      "after_id": "914e7b23-2157-4c34-b20a-0cf42a41877d",
+      "request_ids": [
+        "20266e41-d0c0-4543-af7d-08b5dea064f4",
+        "3c9f857c-c7b7-4f4f-88e0-9cb9d56deac7"
+      ],
+      "code": null,
+      "outcome": "success",
+      "error": null
+    }
+  ],
+  "usage_response_ids": [
+    "resp_0240461200caec55006aa06221800087d09d75461c10a6e4b8",
+    "resp_0240461200caec55006aa06224a57487d0a82ec587b6136f1f",
+    "resp_0240461200caec55006aa062281e6087d0bec04dd22b0ace15",
+    "resp_0240461200caec55006aa0622b57d887d085ec8962e8277324",
+    "resp_0240461200caec55006aa0622fd5a087d08304ce216e066e10",
+    "resp_0240461200caec55006aa06233d3e087d0b5b2a991282e6c8c",
+    "resp_0240461200caec55006aa0623a693887d0be025a836787e562",
+    "resp_0240461200caec55006aa0624118f887d0891fb73a96516598"
+  ],
+  "steer_marks": [],
+  "outcome": "success",
+  "final_observation": "914e7b23-2157-4c34-b20a-0cf42a41877d"
+}
