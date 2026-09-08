@@ -19,6 +19,8 @@ class Session:
         self.run_id, self.tenant = run_id, tenant
         self.action_id = None
         self.operation_id = None
+        self.repair_identity = None
+        self.lose_response_step = None
         self.network = []
         self.pending = set()
         self.requests = {}
@@ -66,6 +68,8 @@ class Session:
                 if e.action_id == self.action_id and e.method not in ("GET", "HEAD", "OPTIONS")
             )
             op = self.operation_id or f"{self.run_id}:{self.action_id}:{ordinal}"
+            if self.repair_identity and request.url == self.repair_identity["url"]:
+                op = self.repair_identity["operation_id"]
             headers["X-Myelin-Operation-ID"] = op
             if request in self.requests:
                 self.requests[request].request_headers["X-Myelin-Operation-ID"] = op
@@ -211,6 +215,9 @@ class Session:
         )
         self.network.append(event)
         self.store.append("network.jsonl", event)
+        if self.lose_response_step == self.action_id:
+            self.lose_response_step = None
+            raise ConnectionError("Injected applied-write/lost-response after handler completion")
         return result
 
     async def snapshot(self):

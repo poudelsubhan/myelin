@@ -109,6 +109,10 @@ class Compiler:
         astra = Astra(self.settings, self.store, self.emit)
         instructions = (
             "Compile the successful browser trace into a reusable Program JSON object. "
+            "When repair_scope is supplied, preserve every prior step outside its list exactly, "
+            "including source IDs and conditions. Replace only scoped steps using new repair "
+            "HTTP evidence. Keep final_post unchanged; update supported_revisions to the new "
+            "trace environment, parent/version and compiled_from provenance. "
             "Return only JSON matching the supplied Program schema. Use provided high-confidence "
             "HTTP candidates exactly for request fields and extracts; do not invent endpoints. "
             "Keep their IDs/dependencies. Retain only necessary successful UI prefix actions "
@@ -159,6 +163,14 @@ class Compiler:
             try:
                 program = Program.model_validate_json(response.output_text)
                 validate_program(program, trace, candidates, {self.settings.crm_url})
+                if repair_scope and prior:
+                    old = {s.id: s for s in prior.steps}
+                    new = {s.id: s for s in program.steps}
+                    if [s.id for s in prior.steps] != [s.id for s in program.steps]:
+                        raise BindingError("repair must preserve step ordering and IDs")
+                    for sid in old.keys() - set(repair_scope):
+                        if old[sid] != new[sid]:
+                            raise BindingError(f"repair changed unscoped step {sid}")
                 if program.parent_hash != (prior.content_hash() if prior else None):
                     raise BindingError("incorrect parent hash")
                 self.store.save("compiled-program.json", program)

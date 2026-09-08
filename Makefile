@@ -12,6 +12,6 @@ lint:
 smoke:
 	uv run python scripts/hello.py
 demo-core:
-	@echo 'Core demo unavailable until Phase 4 C1-C8 pass'; exit 1
+	uv run python scripts/demo.py --assert --core
 demo-full:
-	@echo 'Full demo unavailable until Phase 7 C1-C8 and E1-E6 pass'; exit 1
+	uv run python scripts/demo.py --assert --full

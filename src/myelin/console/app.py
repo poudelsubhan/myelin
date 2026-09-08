@@ -1,4 +1,5 @@
 import asyncio
+import hmac
 import re
 import time
 from contextlib import asynccontextmanager
@@ -19,6 +20,7 @@ from myelin.gate.ledger import CandidateStore, Ledger
 from myelin.metrics import aggregate
 from myelin.orchestration import Pipeline
 from myelin.program.executor import Executor
+from myelin.repair.loop import RepairLoop
 from myelin.schema import (
     Contract,
     EnvironmentSpec,
@@ -42,6 +44,7 @@ class RunRequest(Contract):
     policy_revision: str = "crm-policy-v1"
     program_hash: str | None = None
     compile_after: bool = True
+    lost_response_step: str | None = None
 
 
 class PromotionRequest(Contract):
@@ -106,6 +109,7 @@ def create_app(services: Services | None = None):
             session = Session(settings, store, run_id, tenant)
             await session.open(body.environment, tenant)
             sessions[run_id] = session
+            session.lose_response_step = body.lost_response_step
             if body.mode == "record":
                 trace = await Recorder(settings, emit)(
                     body.workflow, body.inputs, body.environment, session=session
@@ -128,7 +132,9 @@ def create_app(services: Services | None = None):
                 result = RunResult(
                     run_id=run_id,
                     success=success,
-                    status="completed" if success else "failed",
+                    status="completed"
+                    if success
+                    else ("budget_exhausted" if trace.outcome == "aborted" else "failed"),
                     program_hash=None,
                     environment=body.environment,
                     final_observation=trace.final_observation or trace.initial_observation,
@@ -155,9 +161,16 @@ def create_app(services: Services | None = None):
                 program = Program.model_validate_json((path / "program.json").read_text())
                 if program.content_hash() != body.program_hash:
                     raise ValueError("candidate hash mismatch")
-                result = await Executor(admin, emit)(
-                    program, body.inputs, body.environment, session
-                )
+                if body.mode == "repair":
+                    result, repaired, gate = await RepairLoop(
+                        settings, admin, candidates, ledger, gate_case, emit
+                    ).run(program, body.inputs, body.environment, session)
+                    if repaired:
+                        status.update(candidate_hash=repaired.content_hash(), gate_id=gate.gate_id)
+                else:
+                    result = await Executor(admin, emit)(
+                        program, body.inputs, body.environment, session
+                    )
             status.update(
                 status="completed" if result.success else "failed",
                 result=result.model_dump(mode="json"),
@@ -204,15 +217,19 @@ def create_app(services: Services | None = None):
         return {"status": "ok", "phase": 1}
 
     @app.post("/runs", status_code=202)
-    async def start_run(body: RunRequest):
-        if body.mode in ("repair", "full"):
+    async def start_run(body: RunRequest, request: Request):
+        if body.mode == "full":
             raise HTTPException(501, "feature pending its integration gate")
-        if body.mode == "program" and (
+        if body.mode in ("program", "repair") and (
             not body.program_hash or not re.fullmatch(r"[a-f0-9]{64}", body.program_hash)
         ):
             raise HTTPException(422, "program mode requires a candidate hash")
         if body.environment.app != "crm" or body.policy_revision != "crm-policy-v1":
             raise HTTPException(422, "unsupported environment or policy")
+        if body.lost_response_step and not hmac.compare_digest(
+            request.headers.get("X-Myelin-Demo-Token", ""), settings.demo_token
+        ):
+            raise HTTPException(403, "internal demo token required for failure injection")
         run_id = str(uuid4())
         statuses[run_id] = {
             "status": "running",
@@ -342,6 +359,30 @@ def create_app(services: Services | None = None):
         )
         await bus.emit(body.gate_id, "ledger.updated", row.model_dump(mode="json"))
         return row
+
+    @app.post("/demo/reset-ledger")
+    async def reset_ledger(request: Request):
+        if not settings.demo_token or not hmac.compare_digest(
+            request.headers.get("X-Myelin-Demo-Token", ""), settings.demo_token
+        ):
+            raise HTTPException(403, "internal demo token required")
+        workflow = "crm.create_invoice"
+        async with ledger.locks[workflow]:
+            path = ledger.root / f"{workflow}.current.json"
+            if path.exists():
+                path.rename(ledger.root / f"{workflow}.reset-{uuid4()}.json")
+        return {"status": "reset", "history_preserved": True}
+
+    @app.post("/demo/tenants")
+    async def demo_tenant(request: Request):
+        if not settings.demo_token or not hmac.compare_digest(
+            request.headers.get("X-Myelin-Demo-Token", ""), settings.demo_token
+        ):
+            raise HTTPException(403, "internal demo token required")
+        body = await request.json()
+        return await admin.reset(
+            body["tenant"], EnvironmentSpec.model_validate(body["environment"])
+        )
 
     @app.get("/ledger/{workflow}")
     async def get_ledger(workflow: str):

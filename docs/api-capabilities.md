@@ -26,3 +26,15 @@ is retained privately, not counted as a successful model response.
 
 Function calling, native async, WebSocket steering, effort updates, hosted shell
 and apply_patch have not yet been live-verified. They remain required later gates.
+
+## Core live integrations
+
+Standard Responses function calling is verified by the real browser recorder.
+JSON-output compilation is verified by pipeline
+c12d306a-c546-47eb-93e2-d11979d93b55: 8 recording responses and one compiler response.
+That pipeline's measured model usage totals USD 0.9567075 under the dated Standard
+configuration (model usage only). The emitted program passed its independent gate.
+
+The official async, steering, reasoning, shell and apply_patch guides were fetched
+for the extension implementations. Reading those guides does not establish live
+feature support; native capability evidence remains pending its respective phase.

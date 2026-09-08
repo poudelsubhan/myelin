@@ -2,6 +2,7 @@ import time
 from urllib.parse import urljoin
 from uuid import uuid4
 
+from myelin.adapters.crm import compatible
 from myelin.contracts import ExecutionContext, FeatureUnavailable
 from myelin.program.bindings import bound_url, html_input, json_path, resolve
 from myelin.program.predicates import evaluate
@@ -19,13 +20,26 @@ class Executor:
     def __init__(self, admin, emit):
         self.admin, self.emit = admin, emit
 
-    async def __call__(self, program, inputs, environment, session=None):
+    async def __call__(
+        self,
+        program,
+        inputs,
+        environment,
+        session=None,
+        *,
+        allow_drift=False,
+        start_at=0,
+        completed_before=None,
+        before_state=None,
+    ):
         if session is None:
             raise ValueError("orchestrator must supply the owned session")
-        if environment.revision not in program.supported_revisions:
+        if not allow_drift and not compatible(program, environment):
             raise ValueError("unsupported program/environment selection")
         start = time.monotonic()
-        before = await self.admin.state(session.tenant)
+        before = (
+            before_state if before_state is not None else await self.admin.state(session.tenant)
+        )
         context = ExecutionContext(
             session,
             inputs,
@@ -34,7 +48,7 @@ class Executor:
             variables=session.variables,
             secret_store=session.secrets,
         )
-        completed = []
+        completed = list(completed_before or [])
         observations = {"response": {}, "business": before, "url": session.page.url, "aria": ""}
         failure = None
         checkpoint = None
@@ -44,7 +58,7 @@ class Executor:
         assertions = []
         failed_step = None
         try:
-            for step in program.steps:
+            for step in program.steps[start_at:]:
                 sent = False
                 if isinstance(step, Branch):
                     raise FeatureUnavailable("branch execution requires Phase 5")
@@ -58,8 +72,9 @@ class Executor:
                     completed_step_ids=list(completed),
                     variables=session.store.sanitizer.clean(context.variables),
                     secret_refs=list(context.secret_store),
-                    resume_url=resolve(
-                        step.resume_url, inputs, context.variables, context.secret_store
+                    resume_url=urljoin(
+                        session.settings.crm_url,
+                        resolve(step.resume_url, inputs, context.variables, context.secret_store),
                     )
                     if step.resume_url
                     else None,
