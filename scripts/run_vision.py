@@ -35,7 +35,21 @@ async def run(mode="record", program_hash=None, inputs=None):
         for _ in range(240):
             status = (await client.get(f"http://localhost:8100/runs/{run_id}")).json()
             if status["status"] != "running":
-                print(json.dumps(status, indent=2))
+                print(
+                    json.dumps(
+                        {
+                            "run_id": run_id,
+                            "status": status["status"],
+                            "error": status.get("error"),
+                            "result": {
+                                k: v
+                                for k, v in (status.get("result") or {}).items()
+                                if k != "oracle_assertions"
+                            },
+                        },
+                        indent=2,
+                    )
+                )
                 return status
             await asyncio.sleep(1)
         raise TimeoutError("orchestrator did not finish within CLI ceiling")

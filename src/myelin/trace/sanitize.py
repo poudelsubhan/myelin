@@ -1,7 +1,11 @@
 import re
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-SENSITIVE = re.compile(r"password|csrf|authorization|cookie|token|api.?key", re.I)
+SENSITIVE = re.compile(
+    r"^(password|csrf|authorization|cookie|set-cookie|token|access_token|refresh_token|"
+    r"api_key|x-csrf-token|x-myelin-demo-token)$",
+    re.I,
+)
 
 
 class Sanitizer:
@@ -9,6 +13,8 @@ class Sanitizer:
         self.secrets = {}
 
     def register(self, value, name=None):
+        if isinstance(value, str) and value.startswith("<secret:"):
+            return value
         if isinstance(value, str) and value:
             if value not in self.secrets:
                 self.secrets[value] = name or f"observed-{len(self.secrets) + 1}"
@@ -16,8 +22,8 @@ class Sanitizer:
         return "<secret:empty>"
 
     def clean(self, value, key=""):
-        if SENSITIVE.search(key):
-            return self.register(str(value))
+        if SENSITIVE.fullmatch(key):
+            return self.register(value)
         if isinstance(value, dict):
             return {k: self.clean(v, k) for k, v in value.items()}
         if isinstance(value, list):
