@@ -1,66 +1,74 @@
 # Myelin
 
-**Give Myelin a task. Astra figures it out once; Myelin turns the successful run
-into a checked program that executes again without model calls.**
+**Myelin turns work that Astra learns once into automation you can reuse.**
 
-When an app changes, Myelin reconciles earlier writes, resumes at a browser
-checkpoint, asks Astra for a local repair, and validates the candidate before
-promotion. The reusable artifact is a typed program with source-linked evidence.
+Myelin lets Astra learn a browser task once, turn it into a checked program, and reuse it on new inputs, with verification and repair built in.
 
-[Watch the final live demo (60 seconds)](docs/media/live-demo.mp4) ·
-[Original demo](docs/media/demo.mp4) ·
-[Build and gate evidence](docs/demo-evidence.md) · [Runbook](docs/runbook.md)
+For example, Astra creates a Trello card with a description, due date, and checklist. Myelin records the successful steps, builds a reusable program, and tests it on new inputs. You can then run the same workflow for more leads.
 
-## Live business workflows
+If a supported page change breaks the program, Astra can repair the affected step. The repair must pass validation before it becomes the active version.
 
-Myelin also runs in a connected real browser profile. Open `/live` on the console
-for a private Trello workflow: learn a sales follow-up once, validate on two new
-inputs, then run a serial five-row batch with independent field checks and zero
-model calls. A separate onboarding task and public-page extraction use registered
-configuration through the same runtime.
+> Learn once. Check the result. Reuse the program.
 
-The live path has its own immutable contracts, account-scoped promotion and durable
-logical-effect journal. An observed final checklist operation also runs over HTTP
-with fresh browser authentication. Uncertain writes stop for read-back instead of
-being repeated. The original owned-app demos remain available at `/`.
+[Watch the 1-minute demo](docs/media/live-demo.mp4) · [Live evidence](docs/live-evidence.md) · [Original demo](docs/media/demo.mp4)
 
-[Live runbook](docs/live-runbook.md) · [Measured live evidence](docs/live-evidence.md)
+## How it works
 
-## Supported workflows
+| Step | What Myelin does |
+|---|---|
+| Learn | Astra completes the task in a browser while Myelin records actions and observed requests. |
+| Build | Turns the successful run into a typed program with reusable inputs. |
+| Validate | Checks the program on new inputs before making it active. |
+| Reuse | Executes the program through browser actions and supported HTTP operations, with zero model calls. |
+| Repair | Asks Astra to fix a supported failure, then validates the new version. |
 
-| Owned app | Task | Architecture |
-|---|---|---|
-| CRM | Create an invoice and mark it paid | Server-rendered forms, cookies, fresh CSRF |
-| Expenses | Create and submit an expense | JSON SPA, fresh bearer auth, response-derived IDs |
+## Architecture
 
-These two integrations demonstrate the reusable recording/compiler/executor design.
-They do **not** establish compatibility with arbitrary online CRMs. A new service
-needs authentication/session integration, workflow scope and independent outcome
-checks. The owned-app demos use synthetic local data; the live Trello board uses clearly labelled example leads.
+```mermaid
+flowchart TD
+    Task[Task and example inputs] --> Astra[Astra works in the browser]
+    Astra --> Record[Recorded actions and requests]
+    Record --> Program[Reusable program]
+    Program --> Checks[Independent validation]
+    Checks --> Saved[Approved program]
+    Inputs[New inputs] --> Run[Browser and HTTP executor]
+    Saved --> Run
+    Run --> Result[Verify the actual result]
+    Run --> Failure[Supported failure]
+    Failure --> Repair[Astra repairs the affected step]
+    Repair --> Checks
+```
 
-## What works
+Myelin records each intended write before sending it. If the result is uncertain, it stops and reads back the app state before deciding how to continue.
 
-- Model-led browser execution records each action, frame, request and response usage.
-- Astra compiles observed traffic into typed HTTP operations with necessary UI steps.
-- Immutable programs pass independently authored business checks before promotion.
-- New inputs execute with zero model calls; field changes can trigger scoped repair.
-- Both apps have full gates with eight program and eight fresh model-reference runs.
-- Native async validation retains original call IDs while Astra analyzes dependencies.
-- Accepted WebSocket steering becomes `amount_cents > 50000`, with explicit provenance
-  and passing below/equal/above cases. Submission remains a single common suffix.
-- Hosted shell analyzes sanitized uploaded traces; staged patches pass a gate before
-  adoption. A real effective-reasoning-effort update has recorded API evidence.
-- The console shows source frames, program steps, branch coverage, ledger decisions
-  and measured costs. Completed history survives restart.
+Program versions are immutable. Each version keeps its own hash and supporting evidence.
 
-The `core-demo` tag preserves the Phase 4 milestone. Later integrations retain it.
-The final budget-conserving rehearsals reuse verified live model evidence and
-execute a small set of new tasks with zero model calls. They do not claim new
-model-reference runs. See [integration status](docs/build-log/SUMMARY.md).
+## What we demonstrated
+
+- **Real Trello workflows:** sales follow-up and onboarding with descriptions, due dates, and checklists.
+- **Fresh execution:** a new Trello task completed in **20.765 seconds**, with **zero model calls** and **16 of 16 checks passing**.
+- **Batch reuse:** five example leads completed, with repeated submissions returning the existing results.
+- **Repair:** one Astra call fixed an induced locator failure, followed by validation on two fresh inputs.
+- **HTTP optimization:** one observed checklist write replaced its browser interaction and passed two fresh validation cases.
+- **Another site:** public-page extraction used the same runtime through configuration.
+- **Regression checks:** 102 tests passed and 54 existing program hashes stayed unchanged.
+
+The original CRM and expense demos are also available. New websites need session setup, a defined workflow, and independent result checks.
+
+## How Astra fits the project
+
+| Judging criterion | What we built and how to show it |
+|---|---|
+| **Astra in Development** | We worked with Astra to design the runtime, implement features, debug live browser failures, and validate changes. The build log and development evidence document that work. |
+| **Astra in Project** | Astra teaches and repairs workflows. Myelin converts successful work into reusable programs. The original demos also demonstrate native async tools, live steering, and hosted patching. |
+| **Live Demo** | The video shows a real Trello task executing, verified results, batch reuse, recorded learning, and the implementation. |
+| **Technicality** | Typed programs, immutable hashes, independent checks, durable write tracking, validated promotion, scoped repair, and recorded cost evidence support the demo. |
+
+[Development evidence](docs/development-evidence.md) · [API capability evidence](docs/api-capabilities.md) · [Build status](docs/build-log/SUMMARY.md)
 
 ## Run locally
 
-Requires Python 3.12+, uv and Playwright Chromium.
+Requires Python 3.12+ and uv.
 
 ```sh
 uv sync --locked
@@ -68,64 +76,31 @@ cp .env.example .env
 uv run playwright install chromium
 ```
 
-Fill OPENAI_API_KEY and set MYELIN_LIVE=1 for model-powered learning/repair.
-OPENAI_BASE_URL may remain blank: it defaults to the official API address. Use a
-custom gateway only if your event supplies one. Set MYELIN_DEMO_TOKEN to a local
-random value. The other demo credentials are synthetic target-app logins.
+In `.env`, set `OPENAI_API_KEY`, enable `MYELIN_LIVE=1` for Astra learning and repair, and set `MYELIN_DEMO_TOKEN` to a random local value. `OPENAI_BASE_URL` defaults to the official API address. The other demo credentials are synthetic target-app logins.
 
-Start in separate terminals:
+Start each service in a separate terminal:
 
 ```sh
-make crm       # target app on 8101
-make expense   # target app on 8102
-make serve     # Myelin console on 8100
+make crm
+make expense
+make serve
 ```
 
-Open http://localhost:8100. MYELIN_HEADLESS=1 avoids extra desktop windows while
-preserving captured frames. Choose “Learn” to create a program, then “Execute the
-current program” for new inputs. The expense full mode learns the explicit note
-rule and runs eight model comparisons.
+Open [localhost:8100](http://localhost:8100) for the original demos. Use `/live` for connected browser workflows.
+
+Follow the [live runbook](docs/live-runbook.md) to configure your browser session and workflow. Authentication, private plans, and raw run data stay outside the public repository.
+
+Learning and repair use the model API. Approved program execution uses zero model calls.
 
 ```sh
 uv run pytest -q
 uv run ruff check .
-uv run python scripts/demo.py --assert --core
-uv run python scripts/demo.py --assert --full
 ```
 
-The fresh full command is model intensive. To reuse your already-verified live
-artifacts and run only three zero-model smoke tasks, pass `--reuse-evidence` as
-shown in the [runbook](docs/runbook.md). `--stage` pauses between engineering beats.
-Raw runs, screenshots, databases, environment files and private plans are ignored.
-The repository includes selected sanitized evidence and the completed video.
+[Demo runbook](docs/runbook.md) · [Live runbook](docs/live-runbook.md) · [CRM contract](docs/crm-contract.md) · [Oracle specification](docs/oracle-spec.md)
 
-## Architecture
+MIT license.
 
-```mermaid
-flowchart LR
-  Task[Task + inputs] --> Astra[Astra browser reasoning]
-  Steer[Explicit user rule] --> Astra
-  Astra --> Trace[Actions + frames + observed traffic]
-  Trace --> Compiler[Astra compiler + staged tools]
-  Compiler --> Candidate[Immutable typed program]
-  Candidate --> Gate[Fresh-case validation]
-  Oracle[Independent business oracle] --> Gate
-  References[Fresh model references in full mode] --> Gate
-  Gate --> Ledger[Promotion ledger]
-  Ledger --> Executor[Deterministic HTTP + browser executor]
-  Executor --> App[Owned application]
-  App --> Repair[Checkpoint + effect reconciliation]
-  Repair --> Astra
-```
+## Keywords
 
-The model's tool surface cannot read target-app source/DB files or call private
-administration endpoints. The oracle checks finite locked inputs and invariants;
-it does not prove arbitrary-task equivalence. Work units count HTTP requests plus
-ten times UI actions. Model-token cost uses dated response usage; unknown cost
-stays unknown, and hosted/container charges are separate.
-
-[API capability evidence](docs/api-capabilities.md) ·
-[Development fixes and tests](docs/development-evidence.md) ·
-[CRM contract](docs/crm-contract.md) · [Oracle specification](docs/oracle-spec.md)
-
-MIT license. Submission artifacts are prepared; event submission is not automated.
+AI agents · browser automation · workflow automation · agentic AI · program synthesis · learning from demonstration · reusable skills · computer use · LLM agents · self-healing automation · verification · deterministic execution · human in the loop · observability · agent memory · task replay · scoped repair · independent validation · durable execution · idempotency · checkpoint recovery · immutable programs · typed programs · trace provenance · API optimization · batch processing · cost tracking · GPT-6 Astra · Astra · OpenAI · Python · Playwright · FastAPI · Pydantic · SQLite · HTTP · WebSockets · native async tools · live steering · hosted patching · Trello · CRM · expense automation
