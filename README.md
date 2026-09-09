@@ -8,6 +8,8 @@ For example, Astra creates a Trello card with a description, due date, and check
 
 If a supported page change breaks the program, Astra can repair the affected step. The repair must pass validation before it becomes the active version.
 
+Myelin is useful to make AI use far more efficient by using Astra for a new task once and then using deterministic programs to execute that task again with new inputs to preserve costs. You pay for learning and repair; routine execution can then run without further model calls.
+
 > Learn once. Check the result. Reuse the program.
 
 [Watch the 1-minute demo](docs/media/live-demo.mp4) · [Live evidence](docs/live-evidence.md) · [Original demo](docs/media/demo.mp4)
